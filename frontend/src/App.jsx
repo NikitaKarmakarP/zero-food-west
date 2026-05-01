@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
-import { MapPin, Utensils, Award, Leaf, ChevronRight, Heart, Bell, Globe, Users, Activity, Zap, Star, MessageSquare, ShieldCheck, Mail, ArrowRight, Trophy, Calculator, Radar } from 'lucide-react'
+import { MapPin, Utensils, Award, Leaf, ChevronRight, Heart, Bell, Globe, Users, Activity, Zap, Star, MessageSquare, ShieldCheck, Mail, ArrowRight, Trophy, Calculator, Radar, Sun, Moon, User, Settings, LogOut, LayoutDashboard } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import PostFood from './pages/PostFood'
@@ -20,9 +20,10 @@ import { useAppContext } from './context/AppContext'
 function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, logout, t, language, setLanguage, notifications, markAllAsRead, clearNotifications } = useAppContext()
+  const { user, logout, t, language, setLanguage, notifications, markAllAsRead, clearNotifications, theme, toggleTheme } = useAppContext()
   const [showNotifications, setShowNotifications] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   
   const unreadCount = notifications.filter(n => n.unread).length;
   
@@ -49,113 +50,271 @@ function Navbar() {
 
   return (
     <motion.nav 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="sticky top-4 z-50 mx-4 sm:mx-6 lg:mx-8 mb-8"
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-6 left-0 right-0 z-[100] px-4 md:px-8"
     >
-      <div className="max-w-7xl mx-auto backdrop-blur-2xl bg-white/70 border border-white/50 shadow-glass rounded-3xl px-6 py-4">
-        <div className="flex justify-between items-center h-10">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="bg-emerald-100 p-2 rounded-xl group-hover:scale-105 transition-transform duration-300 shadow-inner">
-              <Leaf className="h-6 w-6 text-emerald-600" />
-            </div>
-            <span className="text-2xl font-black tracking-tight text-gradient">
-              ZeroWaste.
-            </span>
-          </Link>
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map(item => (
-              <Link 
-                key={item.name}
-                to={item.path} 
-                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${location.pathname === item.path ? 'bg-emerald-50 text-emerald-700 shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-emerald-600'}`}
-              >
-                {item.name}
+      <div className="max-w-7xl mx-auto">
+        <div className="relative group">
+          {/* Outer Glow Effect */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/10 to-emerald-500/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+          
+          <div className="relative backdrop-blur-3xl bg-white/80 dark:bg-black/60 border border-white/20 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] rounded-[3rem] px-6 md:px-10 py-4">
+            <div className="flex justify-between items-center">
+              {/* Brand Logo */}
+              <Link to="/" className="flex items-center gap-4 group/logo">
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-emerald-500/20 rounded-2xl blur-lg opacity-0 group-hover/logo:opacity-100 transition-opacity"></div>
+                  <div className="relative bg-gradient-to-br from-emerald-400 to-teal-600 p-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-500">
+                    <Leaf className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <span className="text-2xl font-black tracking-tighter text-slate-950 dark:text-white uppercase italic">
+                  ZeroWaste<span className="text-emerald-500 group-hover/logo:animate-pulse">.</span>
+                </span>
               </Link>
-            ))}
-            
-            <div className="w-px h-6 bg-slate-200 mx-2"></div>
-            
-            <div className="relative group mx-2">
-               <button className="flex items-center gap-1 text-slate-600 hover:text-emerald-600 font-medium">
-                 <Globe className="h-4 w-4" /> {language.toUpperCase()}
-               </button>
-               <div className="absolute top-full right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                 <button onClick={() => setLanguage('en')} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 rounded-t-xl">English</button>
-                 <button onClick={() => setLanguage('hi')} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50">हिंदी</button>
-                 <button onClick={() => setLanguage('bn')} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 rounded-b-xl">বাংলা</button>
-               </div>
-            </div>
-            
-            {user ? (
-               <div className="flex items-center gap-2">
-                 <div className="relative">
-                   <button 
-                     onClick={() => {
+
+              {/* Desktop Nav Items */}
+              <div className="hidden lg:flex items-center gap-1">
+                {navItems.map(item => (
+                  <Link 
+                    key={item.name}
+                    to={item.path} 
+                    className="relative px-5 py-3 rounded-2xl group/nav"
+                  >
+                    <span className={`relative z-10 font-black text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+                      location.pathname === item.path ? 'text-white dark:text-slate-950' : 'text-slate-500 group-hover/nav:text-slate-950 dark:group-hover/nav:text-white'
+                    }`}>
+                      {item.name}
+                    </span>
+                    {location.pathname === item.path ? (
+                      <motion.div 
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-slate-950 dark:bg-white rounded-2xl shadow-xl"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl opacity-0 group-hover/nav:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100" />
+                    )}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Action Tools */}
+              <div className="flex items-center gap-2 md:gap-4">
+                {/* Language Picker */}
+                <div className="relative group/lang hidden sm:block">
+                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white transition-all">
+                    <Globe className="h-4 w-4" />
+                    <span className="font-black text-[10px] uppercase tracking-widest">{language}</span>
+                  </button>
+                  <div className="absolute top-full right-0 mt-4 w-48 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] shadow-4xl border border-black/5 dark:border-white/10 opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all p-3 z-50">
+                    {[
+                      { code: 'en', name: 'English', native: 'English' },
+                      { code: 'hi', name: 'Hindi', native: 'हिंदी' },
+                      { code: 'bn', name: 'Bengali', native: 'বাংলা' }
+                    ].map(lang => (
+                      <button 
+                        key={lang.code}
+                        onClick={() => setLanguage(lang.code)} 
+                        className={`w-full flex justify-between items-center px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                          language === lang.code ? 'bg-emerald-500 text-white' : 'text-slate-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-white'
+                        }`}
+                      >
+                        {lang.name} <span className="opacity-50 text-[8px]">{lang.native}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Theme Toggle */}
+                <button 
+                  onClick={toggleTheme}
+                  className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white transition-all shadow-sm hover:scale-110 active:scale-95"
+                >
+                  {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </button>
+
+                {/* Notifications */}
+                {user && (
+                  <div className="relative">
+                    <button 
+                      onClick={() => {
                         setShowNotifications(!showNotifications);
                         if (!showNotifications) markAllAsRead();
-                     }}
-                     className="relative ml-1 mr-3 text-slate-600 hover:text-emerald-600 transition-colors group p-2 rounded-xl"
-                   >
-                     <Bell className={`h-6 w-6 group-hover:scale-110 transition-transform ${showNotifications ? 'text-emerald-600' : ''}`} />
-                     {unreadCount > 0 && (
-                       <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm animate-pulse">{unreadCount}</span>
-                     )}
-                   </button>
-                   
-                   <AnimatePresence>
-                     {showNotifications && (
-                       <motion.div 
-                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                         className="absolute right-0 mt-4 w-80 max-h-[450px] overflow-hidden glass-panel rounded-[2rem] shadow-2xl border-white/60 z-50 flex flex-col"
-                       >
-                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-md">
-                           <h3 className="font-black text-slate-900 tracking-tight">Notifications</h3>
-                           {notifications.length > 0 && (
-                             <button onClick={clearNotifications} className="text-[10px] uppercase tracking-widest font-black text-slate-400 hover:text-red-500 transition-colors">Clear All</button>
-                           )}
-                         </div>
-                         <div className="overflow-y-auto no-scrollbar py-2">
-                           {notifications.length === 0 ? (
-                             <div className="p-10 text-center text-slate-400 font-bold text-sm">No new notifications</div>
-                           ) : (
-                             notifications.map(notif => (
-                               <div key={notif.id} className={`px-5 py-4 hover:bg-slate-50/80 transition-colors relative group ${notif.unread ? 'bg-emerald-50/30' : ''}`}>
-                                 {notif.unread && <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-emerald-500"></div>}
-                                 <div className="font-black text-slate-900 text-sm">{notif.title}</div>
-                                 <div className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">{notif.message}</div>
-                                 <div className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">{notif.time}</div>
-                               </div>
-                             ))
-                           )}
-                         </div>
-                       </motion.div>
-                     )}
-                   </AnimatePresence>
-                 </div>
+                      }}
+                      className={`relative p-3 rounded-2xl transition-all border ${
+                        showNotifications 
+                        ? 'bg-emerald-500 text-white border-emerald-400' 
+                        : 'bg-black/5 dark:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white border-transparent'
+                      }`}
+                    >
+                      <Bell className="h-5 w-5" />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[8px] font-black h-5 w-5 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-950 shadow-lg">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </button>
+                    
+                    <AnimatePresence>
+                      {showNotifications && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                          className="absolute right-0 mt-6 w-80 md:w-96 bg-white/95 dark:bg-slate-950/98 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_40px_120px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 z-50 flex flex-col overflow-hidden"
+                        >
+                          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-white/[0.02]">
+                            <h3 className="font-black text-slate-950 dark:text-white tracking-tighter uppercase text-lg italic">Mission Logs</h3>
+                            {notifications.length > 0 && (
+                              <button onClick={clearNotifications} className="text-[9px] uppercase tracking-[0.4em] font-black text-slate-400 hover:text-rose-500 transition-colors">Purge</button>
+                            )}
+                          </div>
+                          <div className="max-h-[400px] overflow-y-auto no-scrollbar py-2">
+                            {notifications.length === 0 ? (
+                              <div className="py-20 text-center">
+                                <Activity className="h-12 w-12 text-slate-200 dark:text-slate-800 mx-auto mb-4" />
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Active Feeds</p>
+                              </div>
+                            ) : (
+                              notifications.map(notif => (
+                                <div key={notif.id} className="px-8 py-6 hover:bg-black/5 dark:hover:bg-white/[0.03] transition-all cursor-pointer border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 group/msg">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <span className="font-black text-slate-950 dark:text-white text-sm tracking-tight group-hover/msg:text-emerald-500 transition-colors">{notif.title}</span>
+                                    {notif.unread && <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-lg" />}
+                                  </div>
+                                  <p className="text-xs text-slate-500 font-medium leading-relaxed mb-3">{notif.message}</p>
+                                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{notif.time}</span>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
 
-                  <Link to="/profile" className="text-slate-600 hover:text-emerald-600 font-medium px-4 border-l border-slate-200">{t('profile')}</Link>
-                  <button onClick={logout} className="bg-red-50 hover:bg-red-100 text-red-600 px-6 py-2 rounded-full font-bold transition-all duration-300">
-                    {t('signOut')}
-                  </button>
+                {/* Profile/Auth Dropdown */}
+                <div className="relative">
+                  {user ? (
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                        className="flex items-center gap-3 p-1.5 pr-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all group relative overflow-hidden"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
+                          {user.name?.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="hidden sm:flex flex-col items-start">
+                          <span className="font-black text-[8px] text-slate-950 dark:text-white uppercase tracking-[0.2em]">{user.name}</span>
+                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em]">{user.role}</span>
+                        </div>
+                        <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${showProfileDropdown ? 'rotate-90' : ''}`} />
+                      </button>
+
+                      <AnimatePresence>
+                        {showProfileDropdown && (
+                          <>
+                            {/* Backdrop to close */}
+                            <div 
+                              className="fixed inset-0 z-[-1]" 
+                              onClick={() => setShowProfileDropdown(false)}
+                            />
+                            
+                            <motion.div 
+                              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                              className="absolute right-0 mt-4 w-72 bg-white/95 dark:bg-slate-950/98 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_40px_120px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 z-[110] overflow-hidden"
+                            >
+                              {/* Dropdown Header */}
+                              <div className="p-8 border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                                <div className="flex items-center gap-4 mb-4">
+                                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-lg shadow-xl shadow-emerald-500/20">
+                                    {user.name?.substring(0, 1).toUpperCase()}
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="font-black text-sm text-slate-950 dark:text-white uppercase tracking-tighter italic">{user.name}</span>
+                                    <span className="text-[10px] text-slate-500 font-medium lowercase tracking-tight">{user.email}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                                   <div className="flex items-center gap-2">
+                                      <Zap className="h-4 w-4 text-emerald-500 fill-emerald-500" />
+                                      <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Impact Core</span>
+                                   </div>
+                                   <span className="text-xl font-black text-slate-950 dark:text-white italic">{user.points || 0}</span>
+                                </div>
+                              </div>
+
+                              {/* Dropdown Menu */}
+                              <div className="p-3">
+                                <Link 
+                                  to="/profile" 
+                                  onClick={() => setShowProfileDropdown(false)}
+                                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                >
+                                  <User className="h-5 w-5 group-hover/item:text-emerald-500 transition-colors" />
+                                  <span className="font-black text-[10px] uppercase tracking-widest">Bio-Profile</span>
+                                </Link>
+                                
+                                <Link 
+                                  to="/dashboard" 
+                                  onClick={() => setShowProfileDropdown(false)}
+                                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                >
+                                  <LayoutDashboard className="h-5 w-5 group-hover/item:text-blue-500 transition-colors" />
+                                  <span className="font-black text-[10px] uppercase tracking-widest">Command Center</span>
+                                </Link>
+
+                                <button 
+                                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                >
+                                  <Settings className="h-5 w-5 group-hover/item:rotate-90 transition-transform" />
+                                  <span className="font-black text-[10px] uppercase tracking-widest">Sys_Settings</span>
+                                </button>
+                                
+                                <div className="h-px bg-black/5 dark:bg-white/5 my-2 mx-4" />
+                                
+                                <button 
+                                  onClick={() => {
+                                    setShowProfileDropdown(false);
+                                    logout();
+                                  }}
+                                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-rose-500 hover:bg-rose-500 hover:text-white transition-all group/item shadow-sm"
+                                >
+                                  <LogOut className="h-5 w-5" />
+                                  <span className="font-black text-[10px] uppercase tracking-widest text-inherit">Terminate Link</span>
+                                </button>
+                              </div>
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ) : (
+                    <Link 
+                      to="/login" 
+                      className="px-8 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black text-[10px] uppercase tracking-widest shadow-xl hover:-translate-y-0.5 transition-all"
+                    >
+                      Initialize Uplink
+                    </Link>
+                  )}
                 </div>
-            ) : (
-               <Link to="/login" className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-full font-medium transition-all hover:shadow-lg hover:-translate-y-0.5 duration-300">
-                 {t('signIn')}
-               </Link>
-            )}
-          </div>
 
-          <div className="md:hidden flex items-center gap-4">
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-slate-600"
-            >
-              <Activity className="h-6 w-6" />
-            </button>
+                {/* Mobile Menu Toggle */}
+                <button 
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="lg:hidden p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-slate-500"
+                >
+                  <Activity className={`h-6 w-6 transition-transform ${isMobileMenuOpen ? 'rotate-90 text-emerald-500' : ''}`} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -167,25 +326,54 @@ function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden mt-4 mx-4 glass-panel rounded-[2rem] overflow-hidden bg-white/90 backdrop-blur-2xl border-white/50 shadow-2xl"
+            className="md:hidden mt-6 mx-4 bg-slate-950/95 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden border border-white/5 shadow-4xl"
           >
-            <div className="flex flex-col p-6 gap-4">
+            <div className="flex flex-col p-8 gap-6">
               {navItems.map(item => (
                 <Link 
                   key={item.name}
                   to={item.path} 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-6 py-4 rounded-2xl font-black text-slate-900 hover:bg-emerald-50 transition-all flex justify-between items-center group"
+                  className="px-8 py-5 rounded-2xl font-black text-white hover:bg-white/5 transition-all flex justify-between items-center group text-xs uppercase tracking-[0.3em]"
                 >
                   {item.name}
-                  <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all" />
+                  <ChevronRight className="h-4 w-4 text-emerald-500" />
                 </Link>
               ))}
-              <div className="h-px bg-slate-100 my-2"></div>
+              <div className="h-px bg-white/5 my-2"></div>
               {user ? (
-                <button onClick={logout} className="w-full py-4 text-rose-600 font-black text-left px-6">Sign Out</button>
+                <div className="flex flex-col gap-4">
+                  <div className="px-8 py-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black">
+                      {user.name?.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-black text-white uppercase text-[10px] tracking-widest">{user.name}</span>
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-3 w-3 text-emerald-400 fill-emerald-400" />
+                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{user.points} Points</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Link 
+                    to="/profile" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="px-8 py-4 rounded-2xl font-black text-slate-400 hover:text-white hover:bg-white/5 transition-all text-[10px] uppercase tracking-[0.3em]"
+                  >
+                    View Bio-Profile
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      logout();
+                    }} 
+                    className="w-full py-5 text-rose-500 font-black text-left px-8 text-[10px] uppercase tracking-[0.4em] flex items-center gap-4 group"
+                  >
+                    Terminate Link <LogOut className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
+                  </button>
+                </div>
               ) : (
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 text-emerald-600 font-black text-left px-6">Sign In</Link>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-5 text-emerald-400 font-black text-left px-8 text-[10px] uppercase tracking-[0.4em]">Initialize Uplink</Link>
               )}
             </div>
           </motion.div>
@@ -217,15 +405,15 @@ function Home() {
   return (
     <div className="selection:bg-emerald-500/30">
       {/* Cinematic Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-32 overflow-hidden bg-slate-900">
+      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-32 overflow-hidden bg-slate-950">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/80 to-slate-900 z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/80 to-slate-950 z-10"></div>
           <motion.img 
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-            src="https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1920&q=80" 
-            className="w-full h-full object-cover opacity-60" 
+            src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80" 
+            className="w-full h-full object-cover opacity-50" 
             alt="Hero Background" 
           />
         </div>
@@ -234,7 +422,7 @@ function Home() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-emerald-500/20 backdrop-blur-xl border border-emerald-500/30 text-emerald-400 font-black mb-10 text-xs uppercase tracking-[0.3em]"
+            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-emerald-500/10 backdrop-blur-xl border border-emerald-500/20 text-emerald-400 font-black mb-10 text-xs uppercase tracking-[0.3em]"
           >
              <Users className="h-4 w-4" /> Join 850+ active volunteers today
           </motion.div>
@@ -243,17 +431,17 @@ function Home() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-7xl md:text-9xl font-black text-white mb-10 tracking-tighter leading-[0.85]"
+            className="text-6xl md:text-8xl font-black text-white mb-10 tracking-tighter leading-none uppercase italic"
           >
-            Rescue <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Food.</span> <br/>
-            Nourish <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Life.</span>
+            Rescue <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">Food.</span> <br/>
+            Nourish <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">Life.</span>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-slate-300 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed mb-14 opacity-80"
+            className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed mb-12 opacity-80"
           >
             The intelligent platform connecting surplus food from restaurants and events with NGOs to make zero food waste a reality.
           </motion.p>
@@ -264,7 +452,7 @@ function Home() {
             transition={{ delay: 0.6 }}
             className="flex flex-wrap justify-center gap-6"
           >
-            <Link to="/donate" className="group bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-12 py-6 rounded-[2.5rem] font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-500/30 flex items-center gap-3">
+            <Link to="/donate" className="group bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-12 py-6 rounded-[2.5rem] font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-500/30 flex items-center gap-3">
               Share Surplus Food <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link to="/map" className="bg-white/10 hover:bg-white/20 text-white px-12 py-6 rounded-[2.5rem] font-black text-lg backdrop-blur-xl border border-white/10 transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
@@ -277,83 +465,109 @@ function Home() {
         <motion.div 
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-white/30"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-slate-400 dark:text-white/30"
         >
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+          <div className="w-6 h-10 border-2 border-slate-200 dark:border-white/20 rounded-full flex justify-center p-1">
              <div className="w-1 h-2 bg-emerald-500 rounded-full"></div>
           </div>
         </motion.div>
       </section>
 
       {/* Impact Stats - Editorial Grid */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <section className="py-64 bg-white dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
+        {/* Cinematic Background Engineering */}
+        <div className="absolute inset-0 z-0">
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+           <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               { 
                 icon: Utensils, 
                 label: "Meals Rescued", 
-                value: "12,450", 
+                value: "14,250", 
                 color: "emerald", 
-                desc: "Nutritious servings diverted from landfills",
-                gradient: "from-emerald-500/20 to-teal-500/20",
+                delta: "+12.4%",
+                desc: "High-integrity servings diverted from urban landfills with forensic precision.",
                 glow: "group-hover:shadow-emerald-500/20"
               },
               { 
                 icon: Users, 
-                label: "Active Volunteers", 
-                value: "850+", 
+                label: "Active Nodes", 
+                value: "920+", 
                 color: "blue", 
-                desc: "People dedicated to ending urban hunger",
-                gradient: "from-blue-500/20 to-indigo-500/20",
+                delta: "+8.2%",
+                desc: "Verified volunteer nodes dedicated to secure rapid-response distribution.",
                 glow: "group-hover:shadow-blue-500/20"
               },
               { 
                 icon: Leaf, 
-                label: "CO₂ Offset (KG)", 
-                value: "4,200", 
+                label: "Carbon Offset", 
+                value: "5.8t", 
                 color: "amber", 
-                desc: "Environmental impact equivalent to 180 trees",
-                gradient: "from-amber-500/20 to-orange-500/20",
+                delta: "+15.1%",
+                desc: "Environmental impact mitigation equivalent to 240 mature urban trees.",
                 glow: "group-hover:shadow-amber-500/20"
               }
             ].map((stat, i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 60 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.8 }}
-                whileHover={{ y: -10 }}
-                className={`group relative p-12 rounded-[4rem] bg-white border border-slate-100 transition-all duration-700 ${stat.glow} hover:border-transparent`}
+                transition={{ delay: i * 0.15, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className={`group relative p-12 rounded-[4rem] bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 backdrop-blur-3xl transition-all duration-1000 ${stat.glow} hover:border-emerald-500/30 shadow-[0_30px_70px_rgba(0,0,0,0.03)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.4)]`}
               >
-                {/* Background Glow Metaphor */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[4rem]`}></div>
-                <div className="absolute -right-4 -top-4 w-32 h-32 bg-slate-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                {/* Dynamic Laser Scan */}
+                <motion.div 
+                  animate={{ top: ['-10%', '110%'] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: i * 0.5 }}
+                  className="absolute left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent z-20 pointer-events-none"
+                />
+
+                {/* Background Dynamic Accent */}
+                <div className={`absolute top-0 right-0 w-64 h-64 bg-${stat.color === 'amber' ? 'orange' : stat.color}-500/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000`}></div>
 
                 <div className="relative z-10">
-                   <div className={`w-20 h-20 rounded-[2rem] bg-${stat.color}-500 text-white flex items-center justify-center mb-10 shadow-2xl shadow-${stat.color}-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-                      <stat.icon className="h-10 w-10" />
+                   <div className="flex justify-between items-start mb-10">
+                      <div className={`w-20 h-20 rounded-[2rem] bg-slate-50 dark:bg-white/5 text-${stat.color === 'amber' ? 'orange' : stat.color}-600 dark:text-${stat.color === 'amber' ? 'orange' : stat.color}-400 border border-black/5 dark:border-white/10 flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:rotate-12 transition-all duration-700`}>
+                         <stat.icon className="h-10 w-10" />
+                      </div>
+                      <div className="text-right">
+                         <div className={`text-[10px] font-black text-${stat.color === 'amber' ? 'orange' : stat.color}-500 uppercase tracking-[0.4em] mb-1 italic`}>{stat.delta}</div>
+                         <div className="text-[8px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">Weekly Delta</div>
+                      </div>
                    </div>
                    
-                   <div className="space-y-2 mb-8">
-                      <div className="text-sm font-black text-slate-400 uppercase tracking-[0.3em]">{stat.label}</div>
-                      <div className="text-7xl font-black text-slate-900 tracking-tighter leading-none">
+                   <div className="space-y-4 mb-10">
+                      <div className="text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.6em]">{stat.label}</div>
+                      <div className="text-6xl md:text-7xl font-black text-slate-950 dark:text-white tracking-tighter leading-none tabular-nums italic">
                          {stat.value}
                       </div>
                    </div>
                    
-                   <div className="h-px w-12 bg-slate-200 mb-8 group-hover:w-24 transition-all duration-500"></div>
-                   
-                   <p className="text-slate-500 text-lg font-medium leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                   <p className="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed mb-10 opacity-80 group-hover:opacity-100 transition-opacity">
                       {stat.desc}
                    </p>
+
+                   <div className="flex items-center justify-between pt-10 border-t border-black/5 dark:border-white/5">
+                      <div className="flex -space-x-4">
+                         {[1,2,3,4].map(idx => (
+                           <img key={idx} src={`https://i.pravatar.cc/100?img=${idx + i*10}`} className="w-10 h-10 rounded-xl border-4 border-white dark:border-[#020617] shadow-xl grayscale group-hover:grayscale-0 transition-all duration-700" alt="Node" />
+                         ))}
+                      </div>
+                      <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 font-black text-[9px] uppercase tracking-widest italic">
+                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></div>
+                         LIVE_AUDIT
+                      </div>
+                   </div>
                 </div>
 
-                {/* Decorative Element */}
-                <div className="absolute bottom-8 right-12 opacity-5 group-hover:opacity-20 transition-all duration-700">
-                   <stat.icon className="h-24 w-24" />
+                {/* Tactical HUD Overlay */}
+                <div className="absolute bottom-8 right-12 opacity-[0.02] group-hover:opacity-10 transition-all duration-1000">
+                   <stat.icon className="h-32 w-32" />
                 </div>
               </motion.div>
             ))}
@@ -362,37 +576,47 @@ function Home() {
       </section>
 
       {/* Active Rescues - Tactical Intelligence Feed */}
-      <section className="py-40 bg-white relative overflow-hidden">
-        {/* Subtle Pro Grid Background */}
+      <section className="py-56 bg-slate-50 dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
+        {/* Tactical Command Overlays */}
         <div className="absolute inset-0 z-0">
-           <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:32px_32px] opacity-40"></div>
-           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-50 via-transparent to-white"></div>
+           {/* High-Resolution Coordinate Grid */}
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:80px_80px] opacity-60"></div>
+           
+           {/* Animated Data Tickers */}
+           <div className="absolute top-20 left-10 opacity-10 flex flex-col gap-2 font-mono text-[8px] dark:text-emerald-500">
+              {["SEC_UPLINK: ACTIVE", "NODES_SYNC: 94%", "DATA_STREAM: NOMINAL", "COORD: 22.5726° N"].map((t, i) => (
+                <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}>{t}</motion.div>
+              ))}
+           </div>
+           
+           <div className="absolute top-0 right-0 w-[900px] h-[900px] bg-blue-500/5 rounded-full blur-[200px] -translate-y-1/2 translate-x-1/4"></div>
+           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/4"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row justify-between items-end mb-24 gap-12">
-            <div className="max-w-3xl">
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-32 gap-20">
+            <div className="max-w-4xl">
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-4 mb-8"
+                className="flex items-center gap-5 mb-8"
               >
-                 <div className="relative h-3 w-3">
+                 <div className="relative h-4 w-4">
                     <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping"></div>
-                    <div className="absolute inset-0 bg-emerald-500 rounded-full"></div>
+                    <div className="absolute inset-0 bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.8)]"></div>
                  </div>
-                 <span className="text-emerald-600 font-black text-[10px] uppercase tracking-[0.5em]">Live Mission Intelligence v9.0</span>
+                 <span className="text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-[0.5em] italic">Mission_Intelligence_v10.4_PRO</span>
               </motion.div>
               
-              <h2 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter mb-10 leading-[0.85]">
-                Active Rescues <br/> 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
-                  Detected Nearby.
+              <h2 className="text-5xl md:text-7xl font-black text-slate-950 dark:text-white tracking-tighter mb-10 leading-none uppercase italic">
+                Active Missions <br/> 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500">
+                  Detected_Now.
                 </span>
               </h2>
               
-              <p className="text-slate-500 text-2xl font-medium leading-relaxed opacity-80 max-w-2xl">
-                Real-time telemetry for <span className="text-slate-900">high-integrity</span> logistics requiring immediate intervention within the urban node.
+              <p className="text-slate-500 dark:text-slate-400 text-xl font-medium leading-relaxed max-w-2xl border-l-2 border-emerald-500/30 pl-10">
+                High-fidelity telemetry for <span className="text-slate-950 dark:text-white font-black italic">verified relief nodes</span> requiring immediate logistics intervention in your regional sector.
               </p>
             </div>
             
@@ -400,80 +624,80 @@ function Home() {
               whileHover={{ scale: 1.05 }}
               className="group"
             >
-               <Link to="/map" className="relative px-12 py-6 bg-slate-900 text-white rounded-3xl font-black text-sm tracking-widest flex items-center gap-4 transition-all shadow-2xl hover:bg-emerald-600 group">
-                  EXPLORE MISSION RADAR <MapPin className="h-5 w-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-emerald-500 rounded-2xl flex items-center justify-center text-[10px] shadow-xl border-4 border-white animate-bounce">
+               <Link to="/map" className="relative px-14 py-7 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-[2.5rem] font-black text-xs tracking-[0.3em] flex items-center gap-6 transition-all shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(255,255,255,0.1)] hover:bg-emerald-600 dark:hover:bg-emerald-500 group active:scale-95 uppercase italic">
+                  RADAR_INTERFACE <Radar className="h-6 w-6 text-emerald-400 dark:text-emerald-600 group-hover:text-white dark:group-hover:text-slate-950 transition-colors animate-spin-slow" />
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-xs font-black shadow-4xl border-8 border-white dark:border-[#020617] animate-bounce text-slate-950">
                      {activeDonations.length}
                   </div>
                </Link>
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {activeDonations.slice(0, 3).map((item, idx) => (
               <motion.div 
                 key={item.id}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.8 }}
-                className="group relative bg-white rounded-[4rem] border border-slate-100 shadow-xl hover:shadow-4xl transition-all duration-700 overflow-hidden"
+                transition={{ delay: idx * 0.1, duration: 1 }}
+                className="group relative bg-white/[0.03] rounded-[5rem] border border-white/5 shadow-[0_40px_100px_rgba(0,0,0,0.5)] hover:border-emerald-500/30 transition-all duration-1000 overflow-hidden backdrop-blur-3xl"
               >
                 {/* Immersive Image Header */}
-                <div className="h-80 relative overflow-hidden">
+                <div className="h-96 relative overflow-hidden">
                    <motion.img 
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 2 }}
+                    whileHover={{ scale: 1.15 }}
+                    transition={{ duration: 3 }}
                     src={item.image || "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=800&q=80"} 
                     alt={item.foodName}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000"
                    />
-                   <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                   <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent"></div>
                    
                    {/* Urgent Status Overlay */}
-                   <div className="absolute top-8 right-8">
-                      <div className="px-6 py-2.5 bg-rose-500/90 backdrop-blur-xl text-white text-[10px] font-black rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20">
-                         <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                   <div className="absolute top-10 right-10">
+                      <div className="px-8 py-3 bg-rose-500 text-white text-[10px] font-black rounded-2xl shadow-4xl flex items-center gap-4 border border-white/20 uppercase tracking-widest">
+                         <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
                          URGENT: {item.expiryTime.substring(11, 16)}
                       </div>
                    </div>
 
                    {/* Mission Distance */}
-                   <div className="absolute bottom-8 left-8">
-                      <div className="flex items-center gap-3 px-5 py-2 bg-white/90 backdrop-blur-xl rounded-2xl border border-slate-100 shadow-xl">
-                         <MapPin className="h-4 w-4 text-emerald-500" />
-                         <span className="text-xs font-black text-slate-900">{item.distance} <span className="text-slate-400">OFFSET</span></span>
+                   <div className="absolute bottom-10 left-10">
+                      <div className="flex items-center gap-4 px-6 py-3 bg-black/60 backdrop-blur-3xl rounded-2xl border border-white/5 shadow-2xl">
+                         <MapPin className="h-5 w-5 text-emerald-400" />
+                         <span className="text-xs font-black text-white">{item.distance} <span className="text-slate-500 tracking-widest uppercase ml-1">OFFSET</span></span>
                       </div>
                    </div>
                 </div>
 
                 <div className="p-12">
-                   <div className="mb-10">
-                      <div className="flex items-center gap-3 mb-4">
-                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: Active Recovery</span>
+                   <div className="mb-12">
+                      <div className="flex items-center gap-4 mb-6">
+                         <div className="h-px w-10 bg-emerald-500"></div>
+                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Protocol: Active Recovery</span>
                       </div>
-                      <h3 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-3xl font-black text-white mb-6 tracking-tighter group-hover:text-emerald-400 transition-colors leading-none uppercase italic">
                         {item.foodName}
                       </h3>
-                      <div className="flex items-end gap-2 text-slate-400">
-                         <span className="text-4xl font-black text-slate-900 leading-none tracking-tighter">{item.quantity}</span>
-                         <span className="text-xs font-bold uppercase tracking-widest mb-1">Servings Detected</span>
+                      <div className="flex items-end gap-3 text-slate-600">
+                         <span className="text-3xl font-black text-white leading-none tracking-tighter tabular-nums italic">{item.quantity}</span>
+                         <span className="text-[9px] font-black uppercase tracking-[0.3em] mb-1">Units detected</span>
                       </div>
                    </div>
 
                    <button 
                     onClick={() => acceptDonation(item.id)}
-                    className="w-full relative overflow-hidden bg-slate-50 hover:bg-slate-900 text-slate-900 hover:text-white font-black py-6 rounded-[2.5rem] transition-all duration-500 flex items-center justify-center gap-4 group/btn border border-slate-100 shadow-inner active:scale-95"
+                    className="w-full relative overflow-hidden bg-white/5 hover:bg-white text-slate-400 hover:text-slate-950 font-black py-6 rounded-[2.5rem] transition-all duration-700 flex items-center justify-center gap-5 group/btn border border-white/10 active:scale-95 text-[10px] uppercase tracking-[0.4em] italic"
                    >
-                      <span className="relative z-10 uppercase tracking-widest text-xs">Deploy To Rescue</span>
-                      <Zap className="h-5 w-5 fill-emerald-500 group-hover/btn:fill-emerald-400 transition-colors" />
+                      <span className="relative z-10">DEPLOY TO MISSION</span>
+                      <Zap className="h-4 w-4 fill-emerald-500 group-hover/btn:fill-slate-950 transition-colors" />
                    </button>
                 </div>
 
                 {/* Decorative Data Nodes */}
-                <div className="absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none">
-                   <Radar className="h-32 w-32 text-emerald-500" />
+                <div className="absolute top-1/2 right-6 -translate-y-1/2 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none duration-1000">
+                   <Radar className="h-48 w-48 text-emerald-500" />
                 </div>
               </motion.div>
             ))}
@@ -482,107 +706,115 @@ function Home() {
       </section>
 
       {/* Operational Lifecycle - The Mission Flow */}
-      <section className="py-48 bg-white relative overflow-hidden">
+      <section className="py-56 bg-slate-950 relative overflow-hidden transition-colors duration-500">
         {/* Background Engineering Accents */}
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50/50 -skew-x-12 translate-x-20 z-0"></div>
-        <div className="absolute top-1/2 left-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px] -translate-x-1/2"></div>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-white/[0.01] -skew-x-12 translate-x-40 z-0 border-l border-white/5"></div>
+        <div className="absolute top-1/2 left-0 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[200px] -translate-x-1/2"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between mb-32 gap-12">
-            <div className="max-w-2xl">
+          <div className="flex flex-col lg:flex-row items-center justify-between mb-40 gap-24">
+            <div className="max-w-3xl">
                <motion.div 
                  initial={{ opacity: 0, y: 10 }}
                  whileInView={{ opacity: 1, y: 0 }}
-                 className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-slate-900 text-white font-black text-[9px] uppercase tracking-[0.5em] mb-10 shadow-2xl"
+                 className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.5em] mb-12 shadow-2xl backdrop-blur-3xl italic"
                >
-                  <Activity className="h-3 w-3 text-emerald-400" /> System Orchestration
+                  <Activity className="h-4 w-4 text-emerald-400" /> Protocol Orchestration_v10.4
                </motion.div>
-               <h2 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.85]">
-                 From Ballroom to Bowl <br/>
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
-                   in under 90 minutes.
+               <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10 uppercase italic">
+                 Ballroom to Bowl <br/>
+                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500">
+                   under 90 minutes.
                  </span>
                </h2>
+               <p className="text-slate-400 text-xl font-medium leading-relaxed max-w-2xl border-l-2 border-emerald-500/30 pl-10">
+                 Hyper-optimized logistics node bridging the gap between urban surplus and community nourishment.
+               </p>
             </div>
             
-            <div className="flex items-center gap-8 p-10 rounded-[3rem] bg-slate-50 border border-slate-100 shadow-inner">
-               <div className="text-right">
-                  <div className="text-4xl font-black text-slate-900 tracking-tighter">90<span className="text-emerald-500">min</span></div>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Average Response</div>
+            <div className="flex flex-col gap-8 p-12 rounded-[4rem] bg-white/[0.02] border border-white/5 shadow-inner backdrop-blur-3xl min-w-[320px]">
+               <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-6xl font-black text-white tracking-tighter tabular-nums italic">90<span className="text-emerald-500 text-2xl ml-1">m</span></div>
+                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">AVG_RESPONSE</div>
+                  </div>
+                  <div className="w-px h-12 bg-white/10 mx-8"></div>
+                  <div>
+                    <div className="text-6xl font-black text-white tracking-tighter tabular-nums italic">100<span className="text-emerald-500 text-2xl ml-1">%</span></div>
+                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">INTEGRITY</div>
+                  </div>
                </div>
-               <div className="w-px h-12 bg-slate-200"></div>
-               <div>
-                  <div className="text-4xl font-black text-slate-900 tracking-tighter">100<span className="text-emerald-500">%</span></div>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Success Rate</div>
+               <div className="h-[1px] bg-gradient-to-r from-emerald-500/30 via-emerald-500/10 to-transparent rounded-full"></div>
+               <div className="flex items-center gap-4">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="text-[8px] font-black text-emerald-500/60 uppercase tracking-[0.4em]">Real-time node optimization active</span>
                </div>
             </div>
           </div>
 
           <div className="relative">
              {/* Dynamic Animated Timeline Link */}
-             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 z-0 overflow-hidden rounded-full">
+             <div className="hidden lg:block absolute top-[100px] left-0 w-full h-[2px] bg-white/5 z-0 overflow-hidden rounded-full">
                 <motion.div 
-                  animate={{ left: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                   animate={{ left: ['-100%', '100%'] }}
+                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                   className="absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent"
                 />
              </div>
 
-             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 relative z-10">
                 {[
                   { 
                     step: "01", 
-                    title: "Pre-book Logistics", 
-                    desc: "Inform our dispatch system of your event capacity 48h in advance for standby priority.",
+                    title: "Node Registration", 
+                    desc: "Broadcast your capacity to initialize standby priority across the regional rescue network.",
                     icon: Globe,
-                    color: "emerald",
-                    glow: "shadow-emerald-500/20"
+                    color: "emerald"
                   },
                   { 
                     step: "02", 
                     title: "Dynamic Pickup", 
-                    desc: "Our GPS-optimized cold-chain fleet arrives within 20 minutes of your 'Rescue Call'.",
+                    desc: "GPS-optimized cold-chain assets intercept the node within minutes of local deployment.",
                     icon: MapPin,
-                    color: "blue",
-                    glow: "shadow-blue-500/20"
+                    color: "blue"
                   },
                   { 
                     step: "03", 
-                    title: "Node Distribution", 
-                    desc: "Food is instantly logged and split across verified NGO nodes for immediate consumption.",
+                    title: "Relief Sync", 
+                    desc: "Resources are instantly logged and split across verified NGO nodes for forensic distribution.",
                     icon: Heart,
-                    color: "rose",
-                    glow: "shadow-rose-500/20"
+                    color: "rose"
                   }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.2, duration: 0.8 }}
+                    transition={{ delay: i * 0.2, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     className="group"
                   >
-                     <div className="relative p-12 rounded-[4rem] bg-white border border-slate-100 hover:border-transparent hover:shadow-4xl transition-all duration-700 group-hover:-translate-y-4">
+                     <div className="relative p-12 rounded-[4rem] bg-white/[0.03] border border-white/5 hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all duration-1000 group-hover:-translate-y-6 backdrop-blur-3xl shadow-6xl overflow-hidden">
                         {/* Background Floating Number */}
-                        <div className="absolute top-8 right-12 text-9xl font-black text-slate-50 group-hover:text-emerald-50 transition-colors duration-700 select-none">
+                        <div className="absolute top-8 right-12 text-[10rem] font-black text-white/[0.01] group-hover:text-emerald-500/[0.05] transition-colors duration-1000 select-none italic">
                            {item.step}
                         </div>
 
                         <div className="relative z-10">
-                           <div className={`w-24 h-24 rounded-[2.5rem] bg-${item.color}-500 text-white flex items-center justify-center mb-12 shadow-2xl ${item.glow} group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-                              <item.icon className="h-10 w-10" />
+                           <div className={`w-24 h-24 rounded-[2.5rem] bg-white/5 text-white flex items-center justify-center mb-12 shadow-inner border border-white/10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700`}>
+                              <item.icon className="h-10 w-10 text-emerald-400" />
                            </div>
                            
-                           <h3 className="text-3xl font-black text-slate-900 mb-6 tracking-tight group-hover:text-emerald-600 transition-colors">{item.title}</h3>
-                           <p className="text-slate-500 font-medium leading-relaxed text-lg opacity-80 group-hover:opacity-100 transition-opacity">
+                           <h3 className="text-3xl font-black text-white mb-8 tracking-tighter group-hover:text-emerald-400 transition-colors uppercase italic leading-none">{item.title}</h3>
+                           <p className="text-slate-400 font-medium leading-relaxed text-lg opacity-80 group-hover:opacity-100 transition-opacity">
                               {item.desc}
                            </p>
                         </div>
                         
                         {/* Interactive Step Pulse */}
-                        <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl border border-slate-50 opacity-0 group-hover:opacity-100 transition-all">
-                           <div className={`w-3 h-3 rounded-full bg-${item.color}-500 animate-pulse`}></div>
+                        <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-slate-900 rounded-[2rem] flex items-center justify-center shadow-6xl border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-700">
+                           <div className={`w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.8)] animate-pulse`}></div>
                         </div>
                      </div>
                   </motion.div>
@@ -593,61 +825,60 @@ function Home() {
       </section>
 
       {/* Partner Showcase - Global Trust Gallery */}
-      <section className="py-40 bg-white overflow-hidden relative">
+      <section className="py-56 bg-white dark:bg-[#020617] overflow-hidden relative transition-colors duration-500">
         {/* Subtle Pro Background Elements */}
         <div className="absolute inset-0 z-0">
-           <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:40px_40px] opacity-30"></div>
-           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-slate-50/50 via-transparent to-white"></div>
+           <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:40px_40px] opacity-40 dark:opacity-20"></div>
+           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white dark:from-[#020617] via-transparent to-white dark:to-[#020617]"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 mb-32 text-center relative z-10">
+        <div className="max-w-7xl mx-auto px-4 mb-40 text-center relative z-10">
            <motion.div 
-             initial={{ opacity: 0, y: 20 }}
+             initial={{ opacity: 0, y: 30 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true }}
              className="flex flex-col items-center"
            >
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-50 border border-emerald-100 mb-10">
+              <div className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full bg-slate-50 dark:bg-white/5 border border-black/5 dark:border-white/10 mb-10 backdrop-blur-3xl">
                  <div className="flex gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-75"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-150"></div>
                  </div>
-                 <span className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.4em]">Network Infrastructure v4.2</span>
-                 <div className="w-px h-3 bg-emerald-200 mx-2"></div>
-                 <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Status: Synchronized</span>
+                 <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-[0.5em] italic">Infrastructure Sync v4.2</span>
+                 <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-3"></div>
+                 <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">STATUS: NOMINAL</span>
               </div>
               
-              <h2 className="text-6xl md:text-7xl font-black text-slate-900 tracking-tighter leading-none mb-8">
+              <h2 className="text-5xl md:text-7xl font-black text-slate-950 dark:text-white tracking-tighter leading-none mb-8 uppercase italic">
                 Trusted by Global <br/>
-                <span className="text-emerald-600">Industry Leaders.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500">Industry Leaders.</span>
               </h2>
               
-              <p className="text-slate-500 font-medium max-w-2xl mx-auto text-xl leading-relaxed">
-                Our high-integrity protocol is the gold standard for <span className="text-slate-900">enterprise-grade</span> food rescue operations worldwide.
+              <p className="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto text-xl leading-relaxed border-t border-black/5 dark:border-white/5 pt-8">
+                Our high-integrity protocol is the gold standard for <span className="text-slate-950 dark:text-white font-black italic">enterprise-grade</span> food rescue operations across the global node.
               </p>
            </motion.div>
         </div>
 
-        <div className="relative z-10 space-y-10">
+        <div className="relative z-10 space-y-16">
           {/* Top Marquee - Professional Styled */}
           <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex gap-10 py-6 animate-marquee whitespace-nowrap min-w-full">
+            <div className="flex gap-12 py-8 animate-marquee whitespace-nowrap min-w-full">
               {[
                 'Grand Hyatt', 'Marriott Intl', 'Feeding India', 'Global Food Lab', 
                 'NGO Connect', 'Kolkata Caterers', 'Green Earth', 'Aman Resorts'
               ].concat(['Grand Hyatt', 'Marriott Intl', 'Feeding India', 'Global Food Lab', 'NGO Connect', 'Kolkata Caterers', 'Green Earth', 'Aman Resorts']).map((brand, i) => (
                 <motion.div 
                   key={i}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="inline-flex items-center gap-6 px-10 py-7 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-100 transition-all duration-500 group/badge"
+                  whileHover={{ y: -10, scale: 1.05 }}
+                  className="inline-flex items-center gap-8 px-12 py-10 rounded-[3rem] bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 shadow-4xl hover:border-emerald-500/30 transition-all duration-700 group/badge backdrop-blur-3xl"
                 >
-                   <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover/badge:bg-emerald-500 group-hover/badge:text-white transition-all shadow-inner">
-                      <Globe className="h-7 w-7 text-emerald-600 group-hover/badge:text-white transition-colors" />
+                   <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center group-hover/badge:bg-emerald-500 group-hover/badge:text-slate-950 transition-all shadow-inner border border-black/5 dark:border-white/10">
+                      <Globe className="h-8 w-8 text-slate-950 dark:text-white group-hover/badge:text-slate-950" />
                    </div>
                    <div className="flex flex-col">
-                      <span className="text-2xl font-black text-slate-900 tracking-tight">{brand}</span>
-                      <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Verified Partner</span>
+                      <span className="text-3xl font-black text-slate-950 dark:text-white tracking-tighter uppercase italic">{brand}</span>
+                      <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em] mt-1">Verified Partner</span>
                    </div>
                 </motion.div>
               ))}
@@ -656,28 +887,29 @@ function Home() {
 
           {/* Bottom Marquee - Opposite Direction */}
           <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-            <div className="flex gap-10 py-6 animate-marquee-reverse whitespace-nowrap min-w-full">
+            <div className="flex gap-12 py-8 animate-marquee-reverse whitespace-nowrap min-w-full">
               {[
                 'Four Seasons', 'Compass Group', 'Hilton Worldwide', 'World Central Kitchen',
                 'Taj Hotels', 'Red Cross', 'United Nations', 'Sodexo'
               ].concat(['Four Seasons', 'Compass Group', 'Hilton Worldwide', 'World Central Kitchen', 'Taj Hotels', 'Red Cross', 'United Nations', 'Sodexo']).map((brand, i) => (
                 <motion.div 
                   key={i}
-                  whileHover={{ y: 8, scale: 1.02 }}
-                  className="inline-flex items-center gap-6 px-10 py-7 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-100 transition-all duration-500 group/badge"
+                  whileHover={{ y: 10, scale: 1.05 }}
+                  className="inline-flex items-center gap-8 px-12 py-10 rounded-[3rem] bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 shadow-4xl hover:border-blue-500/30 transition-all duration-700 group/badge backdrop-blur-3xl"
                 >
-                   <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover/badge:bg-blue-500 group-hover/badge:text-white transition-all shadow-inner">
-                      <Zap className="h-7 w-7 text-blue-600 group-hover/badge:text-white transition-colors" />
+                   <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center group-hover/badge:bg-blue-500 group-hover/badge:text-white transition-all shadow-inner border border-black/5 dark:border-white/10">
+                      <Zap className="h-8 w-8 text-slate-950 dark:text-white group-hover/badge:text-white" />
                    </div>
                    <div className="flex flex-col">
-                      <span className="text-2xl font-black text-slate-900 tracking-tight">{brand}</span>
-                      <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-0.5">Network Node</span>
+                      <span className="text-3xl font-black text-slate-950 dark:text-white tracking-tighter uppercase italic">{brand}</span>
+                      <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.4em] mt-1">Network Node</span>
                    </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
+      </section>
 
         {/* CSS for Professional Marquee */}
         <style dangerouslySetInnerHTML={{ __html: `
@@ -699,43 +931,42 @@ function Home() {
             animation-play-state: paused;
           }
         `}} />
-      </section>
 
       {/* Impact Stories - Testimonials */}
-      <section className="py-32 bg-white relative overflow-hidden">
+      <section className="py-56 bg-white dark:bg-[#020617] relative overflow-hidden">
         {/* Ghost Background Text */}
-        <div className="absolute top-0 right-0 text-[20rem] font-black text-slate-50 opacity-[0.03] select-none pointer-events-none -translate-y-1/2 translate-x-1/4">
+        <div className="absolute top-0 right-0 text-[30rem] font-black text-black/[0.01] dark:text-white/[0.01] select-none pointer-events-none -translate-y-1/2 translate-x-1/4 italic">
            VOICES
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row justify-between items-end mb-24 gap-12">
-            <div className="max-w-2xl">
-               <div className="flex items-center gap-3 mb-6">
-                  <div className="h-1 w-12 bg-emerald-500 rounded-full"></div>
-                  <span className="text-emerald-600 font-black text-xs uppercase tracking-[0.3em]">Community Validation</span>
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-40 gap-16">
+            <div className="max-w-3xl">
+               <div className="flex items-center gap-5 mb-8">
+                  <div className="h-[2px] w-16 bg-emerald-500 rounded-full"></div>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-[0.5em]">Community Validation Hub</span>
                </div>
-               <h2 className="text-6xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8 leading-[0.9]">
-                 Voices of the <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">Movement.</span>
+               <h2 className="text-7xl md:text-[9xl] font-black text-slate-950 dark:text-white tracking-tighter mb-12 leading-[0.85]">
+                 Voices of the <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500 italic">Movement.</span>
                </h2>
-               <p className="text-slate-500 text-xl font-medium leading-relaxed">Hear from the pioneers bridging the gap between food surplus and social impact across the urban landscape.</p>
+               <p className="text-slate-500 text-3xl font-medium leading-relaxed max-w-2xl">Bridging the gap between <span className="text-slate-950 dark:text-white">urban surplus</span> and social impact through high-integrity logistics.</p>
             </div>
             
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="glass-panel p-8 rounded-[3rem] bg-white shadow-2xl flex items-center gap-6 border-slate-100"
+              className="p-12 rounded-[4rem] bg-white dark:bg-white/[0.03] shadow-4xl flex items-center gap-8 border border-black/5 dark:border-white/5 backdrop-blur-3xl"
             >
-               <div className="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/20">
-                  <Star className="h-8 w-8 fill-current" />
+               <div className="w-20 h-20 rounded-[2.5rem] bg-emerald-500 text-slate-950 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)] dark:shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+                  <Star className="h-10 w-10 fill-current" />
                </div>
                <div>
-                  <div className="text-3xl font-black text-slate-900 tracking-tight">4.9/5</div>
-                  <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Global Community Rating</div>
+                  <div className="text-5xl font-black text-slate-950 dark:text-white tracking-tighter tabular-nums">4.9/5</div>
+                  <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mt-2">GLOBAL_COMMUNITY_RATING</div>
                </div>
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {[
               {
                 quote: "ZeroWaste has completely transformed how we handle surplus. We went from throwing away 20kg a day to feeding 50 children daily.",
@@ -761,35 +992,35 @@ function Home() {
             ].map((story, i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.8 }}
-                className="group relative p-12 rounded-[4rem] bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-3xl transition-all duration-700 overflow-hidden"
+                transition={{ delay: i * 0.1, duration: 1 }}
+                className="group relative p-16 rounded-[5rem] bg-white dark:bg-white/[0.03] border border-black/5 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/20 transition-all duration-1000 overflow-hidden backdrop-blur-3xl shadow-[0_40px_80px_rgba(0,0,0,0.05)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.4)]"
               >
                 {/* Visual Accent */}
-                <div className={`absolute top-0 left-0 w-full h-2 bg-${story.color}-500 opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                <MessageSquare className="h-20 w-20 text-slate-200 opacity-20 absolute -bottom-4 -right-4 group-hover:scale-110 transition-transform duration-700" />
+                <div className={`absolute top-0 left-0 w-full h-2 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-1000`}></div>
+                <MessageSquare className="h-32 w-32 text-slate-950 dark:text-white opacity-[0.02] absolute -bottom-8 -right-8 group-hover:scale-110 transition-transform duration-1000" />
 
                 <div className="relative z-10">
-                   <div className="flex gap-1 mb-10">
-                      {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 fill-emerald-500 text-emerald-500" />)}
+                   <div className="flex gap-1.5 mb-12">
+                      {[1,2,3,4,5].map(s => <Star key={s} className="h-5 w-5 fill-emerald-500 text-emerald-500" />)}
                    </div>
                    
-                   <p className="text-slate-700 font-bold italic text-2xl leading-relaxed mb-12 tracking-tight group-hover:text-slate-900 transition-colors">
+                   <p className="text-slate-500 dark:text-slate-400 font-bold italic text-3xl leading-relaxed mb-16 tracking-tight group-hover:text-slate-950 dark:group-hover:text-white transition-colors duration-700">
                      "{story.quote}"
                    </p>
                    
-                   <div className="flex items-center gap-5 mt-auto">
+                   <div className="flex items-center gap-6 mt-auto">
                       <div className="relative">
-                         <img src={story.img} className="w-16 h-16 rounded-[2rem] object-cover shadow-2xl group-hover:scale-110 transition-transform duration-500" alt={story.author} />
-                         <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-${story.color}-500 border-4 border-white flex items-center justify-center`}>
-                            <Heart className="h-2.5 w-2.5 text-white fill-current" />
+                         <img src={story.img} className="w-20 h-20 rounded-[2.5rem] object-cover shadow-4xl group-hover:scale-110 transition-transform duration-700 border border-black/5 dark:border-white/10" alt={story.author} />
+                         <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-emerald-500 border-4 border-white dark:border-[#020617] flex items-center justify-center shadow-2xl`}>
+                            <Heart className="h-3 w-3 text-white dark:text-slate-950 fill-current" />
                          </div>
                       </div>
                       <div>
-                         <div className="font-black text-slate-900 text-lg tracking-tight">{story.author}</div>
-                         <div className={`text-[10px] font-black text-${story.color}-600 uppercase tracking-widest mt-1`}>{story.role}</div>
+                         <div className="font-black text-slate-950 dark:text-white text-2xl tracking-tighter uppercase italic">{story.author}</div>
+                         <div className={`text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em] mt-1`}>{story.role}</div>
                       </div>
                    </div>
                 </div>
@@ -810,152 +1041,153 @@ function Home() {
       </section>
 
       {/* Safety & Verification - The Operational Vault */}
-      <section className="py-40 bg-slate-50 relative overflow-hidden">
-        {/* Subtle Engineering Background */}
+      <section className="py-56 bg-slate-50 dark:bg-[#0a0f1e] relative overflow-hidden border-t border-black/5 dark:border-white/5 transition-colors duration-500">
+        {/* Forensic Engineering Background */}
         <div className="absolute inset-0 z-0">
-           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
-           <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-200 to-transparent"></div>
-           <div className="absolute inset-0 bg-[linear-gradient(30deg,#f8fafc_12%,transparent_12.5%,transparent_87%,#f8fafc_87.5%,#f8fafc),linear-gradient(150deg,#f8fafc_12%,transparent_12.5%,transparent_87%,#f8fafc_87.5%,#f8fafc),linear-gradient(30deg,#f8fafc_12%,transparent_12.5%,transparent_87%,#f8fafc_87.5%,#f8fafc),linear-gradient(150deg,#f8fafc_12%,transparent_12.5%,transparent_87%,#f8fafc_87.5%,#f8fafc),linear-gradient(60deg,#f1f5f9_25%,transparent_25.5%,transparent_75%,#f1f5f9_75%,#f1f5f9),linear-gradient(60deg,#f1f5f9_25%,transparent_25.5%,transparent_75%,#f1f5f9_75%,#f1f5f9)] bg-[size:80px_140px] opacity-20"></div>
+           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/10 to-transparent"></div>
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+           <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-100 dark:bg-white/[0.01] -skew-x-12 translate-x-20"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-           <div className="flex flex-col lg:flex-row items-center gap-24">
+           <div className="flex flex-col lg:flex-row items-center gap-32">
               <motion.div 
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 className="lg:w-1/2"
               >
-                 <div className="flex items-center gap-3 mb-8">
-                    <div className="h-px w-16 bg-emerald-500"></div>
-                    <span className="text-emerald-600 font-black text-[10px] uppercase tracking-[0.5em]">Safe-Ops Protocol v2.0</span>
+                 <div className="flex items-center gap-6 mb-10">
+                    <div className="h-[2px] w-16 bg-emerald-500"></div>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-[0.5em] italic">Safe-Ops Protocol v3.0_UPLINK</span>
                  </div>
                  
-                 <h2 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter mb-10 leading-[0.85]">
-                   Every batch <br/> 
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
-                     Forensically Verified.
+                 <h2 className="text-5xl md:text-7xl font-black text-slate-950 dark:text-white tracking-tighter mb-10 leading-none uppercase italic">
+                   Forensic <br/> 
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500">
+                     Verification.
                    </span>
                  </h2>
                  
-                 <p className="text-slate-500 text-2xl font-medium leading-relaxed mb-12 opacity-80">
-                   Our multi-layer safety system ensures every rescued meal meets international gold standards for <span className="text-slate-900">hygiene</span> and <span className="text-slate-900">thermal integrity</span>.
+                 <p className="text-slate-500 dark:text-slate-400 text-xl font-medium leading-relaxed mb-12 border-l-2 border-emerald-500/30 pl-10">
+                   Our multi-layer safety architecture ensures every rescued node meets <span className="text-slate-950 dark:text-white font-black italic">international gold standards</span> for thermal integrity and bio-security.
                  </p>
 
-                 <div className="grid gap-6">
+                 <div className="grid gap-8">
                     {[
-                      { icon: ShieldCheck, title: "Thermal Integrity Tracking", desc: "Real-time cold-chain monitoring from venue to NGO.", status: "Active" },
-                      { icon: Activity, title: "AI Spoilage Detection", desc: "Computer vision analysis of food quality during pickup.", status: "Scanning" },
-                      { icon: Award, title: "HACCP Certified Logistics", desc: "Compliant with global food safety management systems.", status: "Verified" }
+                      { icon: ShieldCheck, title: "Thermal Node Tracking", desc: "Real-time cold-chain monitoring from venue to NGO sector.", status: "SECURE_SYNC" },
+                      { icon: Activity, title: "AI Spoilage Audit", desc: "Neural vision analysis of food quality during pickup.", status: "ANALYZING" },
+                      { icon: Award, title: "HACCP Gold Standard", desc: "Compliant with global food safety management systems.", status: "VERIFIED" }
                     ].map((item, i) => (
                       <motion.div 
-                        key={item.id || i}
-                        whileHover={{ x: 15 }}
-                        className="flex gap-8 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-100 transition-all group"
+                        key={i}
+                        whileHover={{ x: 20 }}
+                        className="flex gap-8 p-10 rounded-[4rem] bg-white dark:bg-white/[0.02] border border-black/5 dark:border-white/5 hover:border-emerald-500/40 transition-all duration-700 group backdrop-blur-3xl shadow-6xl hover:bg-white dark:hover:bg-white/[0.05]"
                       >
-                         <div className="w-16 h-16 rounded-2xl bg-slate-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-inner">
-                            <item.icon className="h-8 w-8" />
+                         <div className="w-20 h-20 rounded-[2.5rem] bg-slate-50 dark:bg-white/5 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-inner border border-black/5 dark:border-white/10">
+                            <item.icon className="h-10 w-10" />
                          </div>
                          <div className="flex-grow">
-                            <div className="flex justify-between items-start mb-1">
-                               <h4 className="font-black text-slate-900 text-lg">{item.title}</h4>
-                               <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded-md">{item.status}</span>
+                            <div className="flex justify-between items-start mb-2">
+                               <h4 className="font-black text-slate-950 dark:text-white text-2xl tracking-tighter uppercase italic leading-none">{item.title}</h4>
+                               <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">{item.status}</span>
                             </div>
-                            <p className="text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                            <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed text-lg">{item.desc}</p>
                          </div>
                       </motion.div>
                     ))}
                  </div>
 
                  <motion.div className="mt-16">
-                    <Link to="/safety" className="inline-flex items-center gap-4 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-sm tracking-widest hover:bg-emerald-600 transition-all shadow-2xl group">
-                       EXPLORE TECHNICAL DOCS <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                    <Link to="/safety" className="relative px-12 py-6 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-[2.5rem] font-black text-[10px] tracking-[0.4em] flex items-center gap-6 transition-all shadow-6xl hover:bg-emerald-600 dark:hover:bg-emerald-500 group uppercase active:scale-95 italic">
+                       ACCESS TECHNICAL VAULT <ArrowRight className="h-6 w-6 text-emerald-400 dark:text-emerald-600 group-hover:text-white dark:group-hover:text-slate-950 transition-colors" />
                     </Link>
                  </motion.div>
               </motion.div>
 
               <motion.div 
-                initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 className="lg:w-1/2 relative"
               >
                  {/* High-Tech Safety Radar Visual */}
-                 <div className="relative aspect-square w-full max-w-[500px] mx-auto">
+                 <div className="relative aspect-square w-full max-w-[650px] mx-auto">
                     {/* Pulsing Outer Rings */}
                     <motion.div 
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-0 border-[1px] border-dashed border-emerald-200 rounded-full"
+                      transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 border-[2px] border-dashed border-black/5 dark:border-white/5 rounded-full"
                     />
                     <motion.div 
                       animate={{ rotate: -360 }}
-                      transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-8 border-[1px] border-emerald-100 rounded-full"
+                      transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-12 border-[1px] border-emerald-500/20 rounded-full"
                     />
                     
                     {/* Main Vault Panel */}
-                    <div className="absolute inset-16 bg-white rounded-[4rem] shadow-[0_50px_100px_rgba(16,185,129,0.15)] border border-slate-100 flex flex-col items-center justify-center p-12 overflow-hidden">
+                    <div className="absolute inset-24 bg-white dark:bg-white/[0.03] rounded-[6rem] shadow-[0_60px_120px_rgba(0,0,0,0.1)] dark:shadow-[0_60px_120px_rgba(0,0,0,0.6)] border border-black/5 dark:border-white/5 flex flex-col items-center justify-center p-20 overflow-hidden backdrop-blur-3xl">
                        {/* Animated Scan Line */}
                        <motion.div 
                          animate={{ top: ['-20%', '120%'] }}
-                         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                         className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent z-10"
+                         transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                         className="absolute left-0 right-0 h-2 bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent z-10"
                        />
                        
                        <div className="relative z-20 text-center">
                           <motion.div 
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className="w-24 h-24 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-emerald-500/40"
+                            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
+                            transition={{ duration: 4, repeat: Infinity }}
+                            className="w-28 h-28 rounded-[2.5rem] bg-emerald-500 text-white flex items-center justify-center mx-auto mb-12 shadow-[0_0_50px_rgba(16,185,129,0.4)]"
                           >
-                             <ShieldCheck className="h-12 w-12" />
+                             <ShieldCheck className="h-14 w-14" />
                           </motion.div>
                           
-                          <div className="space-y-1">
+                          <div className="space-y-4">
                              <motion.div 
                                initial={{ opacity: 0 }}
                                whileInView={{ opacity: 1 }}
-                               className="text-8xl font-black text-slate-900 tracking-tighter"
+                               className="text-7xl font-black text-slate-950 dark:text-white tracking-tighter tabular-nums leading-none"
                              >
                                 99.9<span className="text-emerald-500">%</span>
                              </motion.div>
-                             <div className="text-slate-400 font-black text-xs uppercase tracking-[0.4em]">Safety Compliance Rate</div>
+                             <div className="text-slate-400 dark:text-slate-600 font-black text-[10px] uppercase tracking-[0.5em]">SYSTEM_STABILITY_INDEX</div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-10 mt-16 pt-10 border-t border-slate-50">
+                          <div className="grid grid-cols-2 gap-12 mt-16 pt-12 border-t border-black/5 dark:border-white/10">
                              <div className="text-left">
-                                <div className="text-2xl font-black text-slate-900 tracking-tight">HACCP</div>
-                                <div className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-1">Verified Logistics</div>
+                                <div className="text-3xl font-black text-slate-950 dark:text-white tracking-tighter italic uppercase leading-none">HACCP</div>
+                                <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mt-2">Verified_Protocol</div>
                              </div>
-                             <div className="text-left border-l border-slate-100 pl-10">
-                                <div className="text-2xl font-black text-slate-900 tracking-tight">ISO 22000</div>
-                                <div className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-1">Quality Standards</div>
+                             <div className="text-left border-l border-black/5 dark:border-white/10 pl-12">
+                                <div className="text-3xl font-black text-slate-950 dark:text-white tracking-tighter italic uppercase leading-none">ISO_22K</div>
+                                <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mt-2">Data_Ethics</div>
                              </div>
                           </div>
                        </div>
 
-                       {/* Decorative Hexagon Grid */}
-                       <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')]"></div>
+                       {/* Decorative Hexagon Grid Overlay */}
+                       <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] mix-blend-overlay"></div>
                     </div>
                     
                     {/* Floating Status Nodes */}
-                    {[...Array(4)].map((_, i) => (
+                    {[...Array(8)].map((_, i) => (
                       <motion.div
                         key={i}
                         animate={{ 
-                          y: [0, -20, 0],
-                          opacity: [0.5, 1, 0.5]
+                          y: [0, -50, 0],
+                          opacity: [0.2, 0.9, 0.2],
+                          scale: [1, 1.5, 1]
                         }}
                         transition={{ 
-                          duration: 3 + i, 
+                          duration: 5 + i, 
                           repeat: Infinity,
-                          delay: i * 0.5
+                          delay: i * 0.8
                         }}
-                        className={`absolute w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]`}
+                        className={`absolute w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]`}
                         style={{ 
-                          top: i === 0 ? '10%' : i === 1 ? '85%' : i === 2 ? '45%' : '45%',
-                          left: i === 0 ? '45%' : i === 1 ? '45%' : i === 2 ? '5%' : '90%'
+                          top: i === 0 ? '5%' : i === 1 ? '90%' : i === 2 ? '45%' : i === 3 ? '15%' : i === 4 ? '75%' : i === 5 ? '50%' : i === 6 ? '25%' : '80%',
+                          left: i === 0 ? '45%' : i === 1 ? '45%' : i === 2 ? '5%' : i === 3 ? '85%' : i === 4 ? '15%' : i === 5 ? '95%' : i === 6 ? '10%' : '85%'
                         }}
                       />
                     ))}
@@ -966,112 +1198,113 @@ function Home() {
       </section>
 
       {/* Sustainability Analytics - Interactive Impact Dashboard */}
-      <section className="py-40 bg-slate-950 relative overflow-hidden">
+      <section className="py-56 bg-[#020617] relative overflow-hidden border-t border-white/5 transition-colors duration-500">
         {/* Holographic Background Elements */}
         <div className="absolute inset-0 z-0">
-           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#10b98115_0%,transparent_50%)]"></div>
-           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#3b82f615_0%,transparent_50%)]"></div>
-           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#10b98110_0%,transparent_50%)]"></div>
+           <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#3b82f610_0%,transparent_50%)]"></div>
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-           <div className="flex flex-col lg:flex-row items-center gap-24">
+           <div className="flex flex-col lg:flex-row items-center gap-32">
               <div className="lg:w-1/2">
                  <motion.div 
                    initial={{ opacity: 0, x: -20 }}
                    whileInView={{ opacity: 1, x: 0 }}
-                   className="flex items-center gap-4 mb-8"
+                   className="flex items-center gap-5 mb-10"
                  >
-                    <div className="h-px w-12 bg-emerald-500"></div>
-                    <span className="text-emerald-400 font-black text-[10px] uppercase tracking-[0.5em]">Environmental Analytics v2.4</span>
+                    <div className="h-[2px] w-12 bg-emerald-500"></div>
+                    <span className="text-emerald-400 font-black text-[10px] uppercase tracking-[0.5em] italic">Eco-Analytics v2.8</span>
                  </motion.div>
                  
-                 <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-10 leading-[0.85]">
+                 <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-10 leading-none uppercase italic">
                    Quantifying <br/> 
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500">
                      Global Impact.
                    </span>
                  </h2>
                  
-                 <p className="text-slate-400 text-2xl font-medium leading-relaxed mb-16 opacity-80">
-                   Our proprietary algorithms calculate the <span className="text-white">carbon-offset</span> and <span className="text-white">social utility</span> of every rescue mission in real-time.
+                 <p className="text-slate-500 text-xl font-medium leading-relaxed mb-12 opacity-80 border-l-2 border-emerald-500/30 pl-10">
+                   Our neural algorithms process the <span className="text-white">carbon-offset telemetry</span> and social utility of every rescue mission in real-time.
                  </p>
 
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     {[
-                      { label: "Methane Diverted", value: "850k", unit: "m³", icon: Leaf },
-                      { label: "Water Conserved", value: "12M", unit: "Liters", icon: Globe }
+                      { label: "Methane Diverted", value: "850k", unit: "m³", icon: Leaf, color: "emerald" },
+                      { label: "H2O Conserved", value: "12M", unit: "L", icon: Globe, color: "blue" }
                     ].map((metric, i) => (
                       <motion.div 
                         key={i}
-                        whileHover={{ y: -10 }}
-                        className="p-10 rounded-[3rem] bg-white/5 border border-white/10 backdrop-blur-3xl"
+                        whileHover={{ y: -10, scale: 1.05 }}
+                        className="p-10 rounded-[4rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl transition-all duration-700 shadow-6xl group"
                       >
-                         <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-8">
-                            <metric.icon className="h-6 w-6" />
+                         <div className={`w-14 h-14 rounded-[1.5rem] bg-white/5 text-${metric.color}-400 flex items-center justify-center mb-8 border border-white/10 group-hover:bg-${metric.color}-500 group-hover:text-slate-950 transition-all`}>
+                            <metric.icon className="h-7 w-7" />
                          </div>
-                         <div className="text-5xl font-black text-white tracking-tighter mb-2">{metric.value}<span className="text-emerald-500 text-2xl ml-1">{metric.unit}</span></div>
-                         <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{metric.label}</div>
+                         <div className="text-5xl font-black text-white tracking-tighter mb-3 tabular-nums italic">{metric.value}<span className={`text-${metric.color}-500 text-xl ml-2`}>{metric.unit}</span></div>
+                         <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em]">{metric.label}</div>
                       </motion.div>
                     ))}
                  </div>
               </div>
 
               <div className="lg:w-1/2 w-full">
-                 <div className="relative group p-1 rounded-[4rem] bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border border-white/10 overflow-hidden">
-                    <div className="bg-slate-900/50 backdrop-blur-3xl p-12 rounded-[3.8rem] relative z-10">
+                 <div className="relative group p-1 rounded-[4rem] bg-gradient-to-br from-emerald-500/20 via-white/5 to-blue-500/20 border border-white/10 overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.5)]">
+                    <div className="bg-[#020617]/80 backdrop-blur-3xl p-12 rounded-[3.5rem] relative z-10">
                        <div className="flex justify-between items-center mb-12">
-                          <h3 className="text-2xl font-black text-white tracking-tight">Mission Impact Simulator</h3>
-                          <div className="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">Live Calc</div>
+                          <h3 className="text-2xl font-black text-white tracking-tight uppercase italic">Impact_Simulator</h3>
+                          <div className="px-5 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">LIVE_TELEMETRY</div>
                        </div>
 
                        <div className="space-y-10">
                           <div>
-                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Rescue Volume (KG)</label>
+                             <label className="block text-[9px] font-black text-slate-500 uppercase tracking-[0.5em] mb-4 italic">RESCUE_VOLUME_INPUT (KG)</label>
                              <div className="relative">
                                 <input 
                                   type="number" 
                                   value={calculatorInput}
                                   onChange={(e) => setCalculatorInput(e.target.value)}
-                                  placeholder="Enter weight..."
-                                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-2xl font-black text-white placeholder-slate-700 focus:border-emerald-500/50 transition-all outline-none"
+                                  placeholder="00.00"
+                                  className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] px-8 py-6 text-3xl font-black text-white placeholder-slate-800 focus:border-emerald-500/50 transition-all outline-none tabular-nums"
                                 />
-                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-500 font-black">KG</div>
+                                <div className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-600 font-black text-lg italic">KG</div>
                              </div>
                           </div>
 
                           <button 
                             onClick={calculateImpact}
-                            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-6 rounded-2xl transition-all shadow-2xl shadow-emerald-500/20 active:scale-95"
+                            className="w-full bg-white hover:bg-emerald-500 text-slate-950 font-black py-6 rounded-[2rem] transition-all shadow-6xl active:scale-95 text-[10px] uppercase tracking-[0.4em] group italic"
                           >
-                             GENERATE TELEMETRY
+                             GENERATE MISSION TELEMETRY
+                             <Zap className="h-4 w-4 inline-block ml-3 fill-emerald-500 group-hover:fill-slate-950 transition-colors" />
                           </button>
 
-                          <div className="grid grid-cols-2 gap-6 pt-10 border-t border-white/5">
-                             <div className="space-y-1">
-                                <div className="text-4xl font-black text-white tracking-tighter">{calculatorResult.meals}</div>
-                                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Nourishment Units</div>
+                          <div className="grid grid-cols-2 gap-8 pt-12 border-t border-white/10">
+                             <div className="space-y-2">
+                                <div className="text-4xl font-black text-white tracking-tighter tabular-nums italic">{calculatorResult.meals}</div>
+                                <div className="text-[8px] font-black text-slate-600 uppercase tracking-[0.4em]">NOURISHMENT_NODES</div>
                              </div>
-                             <div className="space-y-1 border-l border-white/5 pl-8">
-                                <div className="text-4xl font-black text-emerald-500 tracking-tighter">{calculatorResult.co2}</div>
-                                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">KG CO2 OFFSET</div>
+                             <div className="space-y-2 border-l border-white/10 pl-8">
+                                <div className="text-4xl font-black text-emerald-500 tracking-tighter tabular-nums italic">{calculatorResult.co2}</div>
+                                <div className="text-[8px] font-black text-slate-600 uppercase tracking-[0.4em]">KG_CO2_DIVERTIED</div>
                              </div>
                           </div>
                        </div>
                     </div>
                     
                     {/* Animated Data Particles */}
-                    <div className="absolute inset-0 pointer-events-none opacity-20">
-                       {[...Array(6)].map((_, i) => (
+                    <div className="absolute inset-0 pointer-events-none opacity-30">
+                       {[...Array(12)].map((_, i) => (
                          <motion.div
                            key={i}
                            animate={{ 
-                             y: [-20, 20],
-                             x: [-10, 10],
+                             y: [-50, 50],
+                             x: [-20, 20],
                              opacity: [0, 1, 0]
                            }}
-                           transition={{ duration: 3 + i, repeat: Infinity }}
-                           className="absolute w-1 h-1 bg-emerald-500 rounded-full"
+                           transition={{ duration: 4 + i, repeat: Infinity }}
+                           className="absolute w-1 h-1 bg-emerald-500 rounded-full blur-[1px]"
                            style={{ 
                              top: `${Math.random() * 100}%`,
                              left: `${Math.random() * 100}%`
@@ -1086,88 +1319,109 @@ function Home() {
       </section>
 
       {/* Operational Command Hubs - Network Visualization */}
-      <section className="py-40 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
-           <div className="text-center mb-32">
+      <section className="py-56 bg-[#020617] relative overflow-hidden">
+        {/* Cinematic Grid Lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+           <div className="text-center mb-40">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-50 border border-slate-100 mb-10"
+                className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 mb-12 backdrop-blur-3xl"
               >
-                 <div className="flex gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                 <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse delay-75"></div>
                  </div>
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Global Node Expansion</span>
+                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">Global_Node_Expansion_v3.0</span>
               </motion.div>
-              <h2 className="text-6xl md:text-7xl font-black text-slate-900 tracking-tighter mb-10">
-                Operational <span className="text-blue-600">Command Hubs.</span>
+              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-10 leading-none uppercase italic">
+                Operational <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400">Command Hubs.</span>
               </h2>
            </div>
 
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-              <div className="grid grid-cols-2 gap-8">
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+              <div className="grid grid-cols-2 gap-10">
                  {[
-                   { city: "Kolkata", role: "Primary Node", status: "Operational", color: "emerald" },
-                   { city: "Mumbai", role: "Logistics Hub", status: "Active", color: "blue" },
-                   { city: "Delhi", role: "Relief Center", status: "Active", color: "indigo" },
-                   { city: "Bangalore", role: "Tech Command", status: "Scaling", color: "amber" }
+                   { city: "Kolkata", role: "Primary Node", status: "NOMINAL", color: "emerald" },
+                   { city: "Mumbai", role: "Logistics Hub", status: "ACTIVE", color: "blue" },
+                   { city: "Delhi", role: "Relief Center", status: "ACTIVE", color: "indigo" },
+                   { city: "Bangalore", role: "Tech Command", status: "UPLINKING", color: "amber" }
                  ].map((hub, i) => (
                    <motion.div 
                      key={i}
-                     whileHover={{ scale: 1.05 }}
-                     className="p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-4xl transition-all duration-500"
+                     whileHover={{ scale: 1.05, y: -10 }}
+                     className="p-12 rounded-[4rem] bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 backdrop-blur-3xl shadow-4xl group"
                    >
-                      <div className={`w-3 h-3 rounded-full bg-${hub.color}-500 mb-6 shadow-2xl shadow-${hub.color}-500/40`}></div>
-                      <h4 className="text-3xl font-black text-slate-900 mb-1 tracking-tight">{hub.city}</h4>
-                      <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest mb-6">{hub.role}</p>
-                      <div className="pt-6 border-t border-slate-200 flex justify-between items-center">
-                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{hub.status}</span>
-                         <ArrowRight className="h-4 w-4 text-slate-300" />
+                      <div className={`w-4 h-4 rounded-full bg-${hub.color === 'amber' ? 'orange' : hub.color}-500 mb-8 shadow-[0_0_20px_rgba(59,130,246,0.4)] animate-pulse`}></div>
+                      <h4 className="text-2xl font-black text-white mb-2 tracking-tighter uppercase italic">{hub.city}</h4>
+                      <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.4em] mb-8">{hub.role}</p>
+                      <div className="pt-8 border-t border-white/5 flex justify-between items-center">
+                         <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{hub.status}</span>
+                         <ArrowRight className="h-5 w-5 text-slate-700 group-hover:text-blue-400 transition-colors" />
                       </div>
                    </motion.div>
                  ))}
               </div>
 
-              <div className="relative">
+              <div className="relative group">
                  {/* Hub Network Abstract Visualization */}
-                 <div className="aspect-square relative rounded-[5rem] overflow-hidden bg-slate-900 p-1">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 via-transparent to-emerald-600/20"></div>
-                    <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-30"></div>
+                 <div className="aspect-square relative rounded-[6rem] overflow-hidden bg-[#020617] border border-white/5 p-1 shadow-[0_60px_120px_rgba(0,0,0,0.6)]">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-transparent to-emerald-600/10 z-0"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px:32px] opacity-20"></div>
                     
                     {/* Animated Connections */}
-                    <svg className="absolute inset-0 w-full h-full p-20 z-10" viewBox="0 0 100 100">
-                       <circle cx="20" cy="30" r="2" fill="#10b981" />
-                       <circle cx="80" cy="40" r="2" fill="#3b82f6" />
-                       <circle cx="50" cy="80" r="2" fill="#6366f1" />
-                       <circle cx="30" cy="70" r="2" fill="#f59e0b" />
+                    <svg className="absolute inset-0 w-full h-full p-24 z-10" viewBox="0 0 100 100">
+                       <defs>
+                          <filter id="glow">
+                             <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                             <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                             </feMerge>
+                          </filter>
+                       </defs>
+                       
+                       <circle cx="20" cy="30" r="3" fill="#10b981" filter="url(#glow)" />
+                       <circle cx="80" cy="40" r="3" fill="#3b82f6" filter="url(#glow)" />
+                       <circle cx="50" cy="80" r="3" fill="#6366f1" filter="url(#glow)" />
+                       <circle cx="30" cy="70" r="3" fill="#f59e0b" filter="url(#glow)" />
                        
                        <motion.line 
-                         initial={{ pathLength: 0 }}
-                         animate={{ pathLength: 1 }}
-                         transition={{ duration: 2, repeat: Infinity }}
-                         x1="20" y1="30" x2="80" y2="40" stroke="white" strokeWidth="0.2" strokeOpacity="0.2" 
+                         initial={{ pathLength: 0, opacity: 0 }}
+                         animate={{ pathLength: 1, opacity: 0.3 }}
+                         transition={{ duration: 3, repeat: Infinity }}
+                         x1="20" y1="30" x2="80" y2="40" stroke="white" strokeWidth="0.5" strokeDasharray="2 2"
                        />
                        <motion.line 
-                         initial={{ pathLength: 0 }}
-                         animate={{ pathLength: 1 }}
-                         transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                         x1="80" y1="40" x2="50" y2="80" stroke="white" strokeWidth="0.2" strokeOpacity="0.2" 
+                         initial={{ pathLength: 0, opacity: 0 }}
+                         animate={{ pathLength: 1, opacity: 0.3 }}
+                         transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+                         x1="80" y1="40" x2="50" y2="80" stroke="white" strokeWidth="0.5" strokeDasharray="2 2"
                        />
                        <motion.line 
-                         initial={{ pathLength: 0 }}
-                         animate={{ pathLength: 1 }}
-                         transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                         x1="50" y1="80" x2="20" y2="30" stroke="white" strokeWidth="0.2" strokeOpacity="0.2" 
+                         initial={{ pathLength: 0, opacity: 0 }}
+                         animate={{ pathLength: 1, opacity: 0.3 }}
+                         transition={{ duration: 5, repeat: Infinity, delay: 2 }}
+                         x1="50" y1="80" x2="30" y2="70" stroke="white" strokeWidth="0.5" strokeDasharray="2 2"
                        />
                     </svg>
                     
                     <div className="absolute inset-0 flex items-center justify-center">
-                       <div className="text-center space-y-4">
-                          <Trophy className="h-20 w-20 text-white mx-auto opacity-20" />
-                          <div className="text-white font-black text-xs uppercase tracking-[0.5em] opacity-40">Network Matrix Active</div>
+                       <div className="text-center space-y-6">
+                          <Trophy className="h-24 w-24 text-white mx-auto opacity-[0.05] group-hover:opacity-10 transition-opacity duration-1000" />
+                          <div className="text-white font-black text-xs uppercase tracking-[0.6em] opacity-20">Matrix_Active_Node_Sync</div>
                        </div>
                     </div>
+
+                    {/* Animated Scan Bar */}
+                    <motion.div 
+                      animate={{ top: ['0%', '100%'] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                      className="absolute left-0 right-0 h-1 bg-blue-500/10 blur-[2px] z-20"
+                    />
                  </div>
               </div>
            </div>
@@ -1175,29 +1429,32 @@ function Home() {
       </section>
 
       {/* Impact Digest - The Community Gravity Well */}
-      <section className="py-40 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
-           <div className="relative group p-1 md:p-2 rounded-[5rem] bg-gradient-to-tr from-emerald-500 via-teal-400 to-blue-500 shadow-[0_50px_100px_rgba(16,185,129,0.2)]">
-              <div className="bg-slate-950 p-16 md:p-28 rounded-[4.5rem] text-center relative overflow-hidden">
+      <section className="py-56 bg-[#020617] relative overflow-hidden border-t border-white/5">
+        {/* Cinematic Grid lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:40px_40px] opacity-20"></div>
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+           <div className="relative group p-2 rounded-[6rem] bg-gradient-to-tr from-emerald-500/20 via-white/5 to-blue-500/20 shadow-[0_60px_120px_rgba(0,0,0,0.6)] border border-white/5 overflow-hidden">
+              <div className="bg-[#020617]/80 backdrop-blur-3xl p-24 md:p-40 rounded-[5.5rem] text-center relative overflow-hidden">
                  {/* Animated Liquid Aura */}
                  <div className="absolute inset-0 z-0">
                     <motion.div 
                       animate={{ 
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 90, 0],
-                        opacity: [0.1, 0.2, 0.1]
+                        scale: [1, 1.3, 1],
+                        rotate: [0, 180, 0],
+                        opacity: [0.05, 0.1, 0.05]
                       }}
-                      transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                      className="absolute -top-[50%] -left-[20%] w-[100%] h-[100%] bg-emerald-500 rounded-full blur-[120px]"
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                      className="absolute -top-[50%] -left-[20%] w-[120%] h-[120%] bg-emerald-500 rounded-full blur-[160px]"
                     />
                     <motion.div 
                       animate={{ 
-                        scale: [1.2, 1, 1.2],
-                        rotate: [0, -90, 0],
-                        opacity: [0.1, 0.2, 0.1]
+                        scale: [1.3, 1, 1.3],
+                        rotate: [0, -180, 0],
+                        opacity: [0.05, 0.1, 0.05]
                       }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      className="absolute -bottom-[50%] -right-[20%] w-[100%] h-[100%] bg-blue-500 rounded-full blur-[120px]"
+                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                      className="absolute -bottom-[50%] -right-[20%] w-[120%] h-[120%] bg-blue-500 rounded-full blur-[160px]"
                     />
                  </div>
 
@@ -1207,102 +1464,112 @@ function Home() {
                       <motion.div
                         key={i}
                         animate={{ 
-                          y: [0, -40, 0],
-                          x: [0, 20, 0],
-                          rotate: [0, 15, 0]
+                          y: [0, -60, 0],
+                          x: [0, 30, 0],
+                          rotate: [0, 25, 0],
+                          opacity: [0.02, 0.05, 0.02]
                         }}
-                        transition={{ duration: 5 + i, repeat: Infinity, delay: i }}
-                        className="absolute opacity-[0.05] text-white"
+                        transition={{ duration: 6 + i, repeat: Infinity, delay: i }}
+                        className="absolute text-white"
                         style={{ 
-                          top: i === 0 ? '15%' : i === 1 ? '70%' : i === 2 ? '20%' : '75%',
-                          left: i === 0 ? '10%' : i === 1 ? '15%' : i === 2 ? '85%' : '80%'
+                          top: i === 0 ? '10%' : i === 1 ? '75%' : i === 2 ? '15%' : '80%',
+                          left: i === 0 ? '5%' : i === 1 ? '10%' : i === 2 ? '90%' : '85%'
                         }}
                       >
-                         <Icon className="h-32 w-32" />
+                         <Icon className="h-48 w-48" />
                       </motion.div>
                     ))}
                  </div>
 
-                 <div className="relative z-10 max-w-3xl mx-auto">
+                 <div className="relative z-10 max-w-4xl mx-auto">
                     <motion.div 
                       initial={{ scale: 0.9, opacity: 0 }}
                       whileInView={{ scale: 1, opacity: 1 }}
-                      className="w-24 h-24 rounded-[2rem] bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center mx-auto mb-12 shadow-2xl shadow-emerald-500/40 rotate-12"
+                      className="w-28 h-28 rounded-[3rem] bg-white text-slate-950 flex items-center justify-center mx-auto mb-16 shadow-4xl rotate-12 group-hover:rotate-0 transition-transform duration-700"
                     >
-                       <Mail className="h-10 w-10 stroke-[2.5]" />
+                       <Mail className="h-12 w-12 stroke-[2.5]" />
                     </motion.div>
                     
-                    <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-10 leading-[0.85]">
+                    <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-10 leading-none uppercase italic">
                       Stay in the <br/> 
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400">
-                        Global Loop.
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500">
+                        Global_Loop.
                       </span>
                     </h2>
                     
-                    <p className="text-slate-400 text-2xl font-medium mb-16 leading-relaxed opacity-90">
-                      Join <span className="text-white font-black">12,000+ change-makers</span> receiving weekly impact digests, rescue alerts, and sustainability deep-dives.
+                    <p className="text-slate-500 text-xl font-medium mb-16 leading-relaxed max-w-2xl mx-auto border-t border-white/5 pt-10 opacity-80">
+                      Join <span className="text-white">12,000+ nodes</span> receiving weekly impact telemetry, rescue alerts, and sustainability audits.
                     </p>
                     
-                    <div className="flex flex-col sm:flex-row gap-5 p-3 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[3rem] max-w-xl mx-auto group/input hover:border-emerald-500/50 transition-all duration-500 shadow-2xl">
+                    <div className="flex flex-col sm:flex-row gap-6 p-4 bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] max-w-2xl mx-auto group/input hover:border-emerald-500/50 transition-all duration-700 shadow-6xl relative z-20">
                        <input 
                          type="email" 
-                         placeholder="Enter your professional email"
-                         className="bg-transparent border-none focus:ring-0 px-8 py-5 text-white placeholder-slate-500 flex-grow font-black text-lg tracking-tight"
+                         placeholder="UPLINK@EMAIL.COM"
+                         className="bg-transparent border-none focus:ring-0 px-8 py-6 text-white placeholder-slate-700 flex-grow font-black text-lg tracking-[0.2em] uppercase outline-none"
                        />
-                       <button className="relative overflow-hidden bg-white text-slate-950 font-black px-12 py-5 rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 shadow-xl group/btn whitespace-nowrap text-lg">
-                          <span className="relative z-10">Sign Me Up</span>
-                          <div className="absolute inset-0 bg-emerald-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+                       <button className="relative overflow-hidden bg-white text-slate-950 font-black px-12 py-6 rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 shadow-6xl group/btn whitespace-nowrap text-[10px] uppercase tracking-[0.4em] italic">
+                          <span className="relative z-10">INITIALIZE SYNC</span>
+                          <div className="absolute inset-0 bg-emerald-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500"></div>
                        </button>
                     </div>
                     
                     {/* Social Proof Avatars */}
-                    <div className="mt-16 flex flex-col items-center gap-6">
-                       <div className="flex -space-x-4">
-                          {[1,2,3,4].map(i => (
+                    <div className="mt-16 flex flex-col items-center gap-8">
+                       <div className="flex -space-x-5">
+                          {[1,2,3,4,5].map(i => (
                             <img 
                               key={i} 
                               src={`https://i.pravatar.cc/100?img=${i+40}`} 
-                              className="w-12 h-12 rounded-full border-4 border-slate-950 shadow-2xl transition-transform hover:scale-125 hover:z-50" 
-                              alt="Joiner" 
+                              className="w-14 h-14 rounded-[1.5rem] border-4 border-[#020617] shadow-4xl transition-all hover:scale-125 hover:z-50 grayscale hover:grayscale-0" 
+                              alt="Node" 
                             />
                           ))}
-                          <div className="w-12 h-12 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-xs border-4 border-slate-950 shadow-2xl">
+                          <div className="w-14 h-14 rounded-[1.5rem] bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-xs border-4 border-[#020617] shadow-4xl">
                              +8k
                           </div>
                        </div>
-                       <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                          No spam. Just Impact. Unsubscribe anytime.
+                       <p className="text-slate-600 text-[8px] font-black uppercase tracking-[0.5em] italic">
+                          SECURE_TRANSMISSION // ENCRYPTED_DATA // NO_SPAM
                        </p>
                     </div>
                  </div>
+
+                 {/* Decorative Border Glow */}
+                 <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
               </div>
            </div>
         </div>
       </section>
 
       {/* Impact Leaderboard - Gamification */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-24 gap-8">
-            <div className="max-w-2xl text-center lg:text-left">
-               <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
-                  <div className="h-1 w-12 bg-amber-500 rounded-full"></div>
-                  <span className="text-amber-600 font-black text-xs uppercase tracking-[0.3em]">Community Champions</span>
+      <section className="py-56 bg-[#020617] relative overflow-hidden">
+        {/* Subtle Background Node Visualization */}
+        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:64px_64px] opacity-10"></div>
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-32 gap-16">
+            <div className="max-w-3xl text-center lg:text-left">
+               <div className="flex items-center justify-center lg:justify-start gap-5 mb-8">
+                  <div className="h-[2px] w-16 bg-amber-500"></div>
+                  <span className="text-amber-400 font-black text-[10px] uppercase tracking-[0.5em]">Community_Champion_Sync</span>
                </div>
-               <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6">
-                 Impact <span className="text-amber-500">Leaderboard.</span>
+               <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-10 leading-none uppercase italic">
+                 Impact <br/>
+                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500">Leaderboard.</span>
                </h2>
-               <p className="text-slate-500 text-xl font-medium">Recognizing the heroes who turn surplus into hope every single week.</p>
+               <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-2xl border-l-2 border-amber-500/30 pl-10 opacity-80">
+                 Recognizing the tactical heroes turning <span className="text-white">urban surplus</span> into social stability every week.
+               </p>
             </div>
-            <div className="flex -space-x-4">
+            <div className="flex -space-x-8 group">
                {[1,2,3,4,5].map(i => (
-                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-16 h-16 rounded-full border-4 border-white shadow-xl" alt="Top User" />
+                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-24 h-24 rounded-[3rem] border-4 border-[#020617] shadow-4xl grayscale hover:grayscale-0 transition-all hover:scale-110" alt="Top Rescuer" />
                ))}
-               <div className="w-16 h-16 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm border-4 border-white shadow-xl">+800</div>
+               <div className="w-24 h-24 rounded-[3rem] bg-white text-slate-950 flex items-center justify-center font-black text-xs border-4 border-[#020617] shadow-4xl group-hover:bg-amber-500 transition-colors uppercase tracking-widest">+800</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               { name: "Rahul S.", points: "12,400", rescues: "45", rank: "1", color: "amber" },
               { name: "Priya K.", points: "10,850", rescues: "38", rank: "2", color: "slate" },
@@ -1310,34 +1577,35 @@ function Home() {
             ].map((user, i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="glass-panel p-10 rounded-[3.5rem] bg-white border-slate-50 shadow-xl relative overflow-hidden group"
+                transition={{ delay: i * 0.1, duration: 1 }}
+                className="group relative p-16 rounded-[5rem] bg-white/[0.03] border border-white/5 shadow-4xl backdrop-blur-3xl overflow-hidden hover:border-amber-500/30 transition-all duration-700"
               >
-                 <div className={`absolute top-0 right-0 w-32 h-32 bg-${user.color}-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700`}></div>
-                 <div className="flex items-center gap-6 mb-8">
+                 <div className={`absolute top-0 right-0 w-48 h-48 bg-${user.color === 'amber' ? 'orange' : user.color}-500/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000`}></div>
+                 
+                 <div className="flex items-center gap-8 mb-12">
                     <div className="relative">
-                       <img src={`https://i.pravatar.cc/100?img=${i+10}`} className="w-20 h-20 rounded-[2rem] object-cover shadow-lg" alt={user.name} />
-                       <div className={`absolute -top-2 -left-2 w-10 h-10 rounded-full bg-${user.color}-500 text-white flex items-center justify-center font-black shadow-xl border-4 border-white`}>
+                       <img src={`https://i.pravatar.cc/100?img=${i+10}`} className="w-24 h-24 rounded-[3rem] object-cover shadow-4xl border border-white/5" alt={user.name} />
+                       <div className={`absolute -top-3 -left-3 w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-4xl border-4 border-[#020617] text-xs`}>
                           #{user.rank}
                        </div>
                     </div>
                     <div>
-                       <h3 className="text-2xl font-black text-slate-900">{user.name}</h3>
-                       <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Rescuer Elite</p>
+                       <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">{user.name}</h3>
+                       <p className="text-amber-500 font-black text-[9px] uppercase tracking-[0.4em] mt-1">RESCUER_ELITE_NODE</p>
                     </div>
                  </div>
                  
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                       <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Impact Points</div>
-                       <div className="text-xl font-black text-slate-900">{user.points}</div>
+                 <div className="grid grid-cols-2 gap-6">
+                    <div className="p-6 rounded-[2.5rem] bg-white/[0.02] border border-white/5 shadow-inner">
+                       <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">IMPACT_SCORE</div>
+                       <div className="text-3xl font-black text-white tracking-tighter tabular-nums">{user.points}</div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                       <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Rescues</div>
-                       <div className="text-xl font-black text-slate-900">{user.rescues}</div>
+                    <div className="p-6 rounded-[2.5rem] bg-white/[0.02] border border-white/5 shadow-inner">
+                       <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">TOTAL_RESCUES</div>
+                       <div className="text-3xl font-black text-white tracking-tighter tabular-nums">{user.rescues}</div>
                     </div>
                  </div>
               </motion.div>
@@ -1347,25 +1615,45 @@ function Home() {
       </section>
 
       {/* Community Call to Action */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-56 bg-[#020617] relative overflow-hidden border-t border-white/5 transition-colors duration-500">
          <div className="max-w-7xl mx-auto px-4 relative z-10">
-            <div className="bg-emerald-600 rounded-[4rem] p-16 md:p-24 text-center text-white relative overflow-hidden shadow-[0_50px_100px_rgba(16,185,129,0.3)]">
-               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
+            <div className="bg-white rounded-[5rem] p-16 md:p-32 text-center text-slate-950 relative overflow-hidden shadow-[0_60px_120px_rgba(255,255,255,0.05)]">
+               {/* Orbital Engineering Accents */}
+               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
+               <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3"></div>
+               
                <div className="relative z-10">
-                  <h2 className="text-6xl font-black mb-8 tracking-tighter">Ready to join the <br/> <span className="text-slate-900 italic">ZeroWaste</span> movement?</h2>
-                  <p className="text-emerald-50 text-xl font-medium mb-12 max-w-2xl mx-auto opacity-90">Start donating surplus food or join as a logistics partner to help us bridge the gap between waste and hunger.</p>
-                  <div className="flex flex-wrap justify-center gap-6">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full bg-slate-950/5 border border-slate-950/10 mb-10 italic"
+                  >
+                     <Zap className="h-4 w-4 text-emerald-500" />
+                     <span className="text-[10px] font-black uppercase tracking-[0.5em]">System_Invitation_v4.0</span>
+                  </motion.div>
+                  
+                  <h2 className="text-5xl md:text-7xl font-black mb-10 tracking-tighter leading-none uppercase italic">
+                    Join the <br/> 
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600">ZeroWaste_Protocol.</span>
+                  </h2>
+                  
+                  <p className="text-slate-500 text-xl font-medium mb-16 max-w-2xl mx-auto leading-relaxed border-t border-slate-100 pt-10">
+                    Initialize your node in the global relief matrix. Bridge the gap between <span className="text-slate-950 font-black italic">urban surplus</span> and community stability.
+                  </p>
+                  
+                  <div className="flex flex-wrap justify-center gap-8">
                      <button 
                        onClick={() => navigate('/login')}
-                       className="bg-white text-emerald-600 font-black px-12 py-6 rounded-[2.5rem] text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                       className="relative overflow-hidden bg-slate-950 text-white font-black px-12 py-6 rounded-[2.5rem] text-[10px] uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-6xl group/btn italic"
                      >
-                        Register as Partner
+                        <span className="relative z-10">UPLINK AS PARTNER</span>
+                        <div className="absolute inset-0 bg-emerald-600 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500"></div>
                      </button>
                      <button 
                        onClick={() => navigate('/policy')}
-                       className="bg-emerald-700 text-white font-black px-12 py-6 rounded-[2.5rem] text-lg hover:bg-emerald-800 transition-all"
+                       className="bg-white border-4 border-slate-950 text-slate-950 font-black px-12 py-6 rounded-[2.5rem] text-[10px] uppercase tracking-[0.4em] hover:bg-slate-50 transition-all active:scale-95 italic"
                      >
-                        Learn More
+                        REVIEW_PROTOCOLS
                      </button>
                   </div>
                </div>
@@ -1452,31 +1740,111 @@ function App() {
           </Routes>
         </AnimatePresence>
       </main>
-      <footer className="mt-12 py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="glass-panel rounded-full px-8 py-3 inline-block shadow-sm">
-            <p className="text-slate-500 text-sm font-bold tracking-wide">&copy; 2026 ZeroWaste. Building a sustainable future.</p>
+      <footer className="py-24 bg-[#020617] border-t border-white/5 relative overflow-hidden">
+        {/* Subtle Background Markings */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] pointer-events-none select-none font-black text-[20rem] flex items-center justify-center italic">
+           ZEROWASTE
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-20 mb-20 text-left">
+             <div className="col-span-1 md:col-span-2">
+                <div className="flex items-center gap-4 mb-10">
+                   <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center shadow-4xl rotate-12">
+                      <Zap className="h-7 w-7" />
+                   </div>
+                   <span className="text-4xl font-black text-white tracking-tighter italic uppercase">ZeroWaste</span>
+                </div>
+                <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-md">
+                   High-integrity urban food rescue network. Utilizing forensic telemetry to bridge the gap between waste and community stability.
+                </p>
+             </div>
+             
+             <div>
+                <h4 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10">Operational_Routes</h4>
+                <ul className="space-y-6">
+                   {[
+                     { name: 'Dashboard', path: '/dashboard' },
+                     { name: 'Mission_Radar', path: '/map' },
+                     { name: 'Post_Mission', path: '/donate' },
+                     { name: 'Profile', path: '/profile' }
+                   ].map(link => (
+                     <li key={link.name}>
+                        <Link to={link.path} className="text-slate-500 hover:text-emerald-400 font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-3 group/link">
+                           <div className="w-1.5 h-1.5 rounded-full bg-white/10 group-hover/link:bg-emerald-500 group-hover/link:animate-pulse transition-all"></div> {link.name}
+                        </Link>
+                     </li>
+                   ))}
+                </ul>
+             </div>
+
+             <div>
+                <Link to="/policy" className="block text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10 hover:text-blue-400 transition-colors">System_Vault</Link>
+                <ul className="space-y-6">
+                   {[
+                     { name: 'Safety_Protocol', path: '/safety' },
+                     { name: 'Impact_Metrics', path: '/leaderboard' },
+                     { name: 'Privacy_Log', path: '/policy' },
+                     { name: 'Terms_of_Ops', path: '/policy' }
+                   ].map(link => (
+                     <li key={link.name}>
+                        <Link to={link.path} className="text-slate-500 hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-3 group/link">
+                           <div className="w-1.5 h-1.5 rounded-full bg-white/10 group-hover/link:bg-blue-500 group-hover/link:animate-pulse transition-all"></div> {link.name}
+                        </Link>
+                     </li>
+                   ))}
+                </ul>
+             </div>
+          </div>
+
+          <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
+            <div className="flex items-center gap-8 px-8 py-4 bg-white/[0.03] border border-white/5 rounded-full backdrop-blur-3xl shadow-4xl">
+               <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em]">&copy; 2026 ZEROWASTE_NETWORK // ALL_NODES_SECURED</p>
+            </div>
+            
+            <div className="flex gap-10">
+               {[Globe, Zap, ShieldCheck].map((Icon, i) => (
+                 <motion.a 
+                   key={i} 
+                   href="#" 
+                   whileHover={{ y: -5, scale: 1.1 }}
+                   className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-all"
+                 >
+                    <Icon className="h-5 w-5" />
+                 </motion.a>
+               ))}
+            </div>
           </div>
         </div>
       </footer>
 
-      {/* Persistent Mission FAB (Floating Action Button) */}
+      {/* Persistent Mission FAB (Floating Action Button) - Forensic Orbital Trigger */}
       <motion.div 
         initial={{ scale: 0, y: 100 }}
         animate={{ scale: 1, y: 0 }}
-        className="fixed bottom-8 right-8 z-[100]"
+        className="fixed bottom-12 right-12 z-[100]"
       >
          <Link 
            to="/donate" 
-           className="group relative flex items-center gap-4 bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:bg-emerald-600 transition-all hover:scale-110 active:scale-95"
+           className="group relative flex items-center gap-6 bg-white text-slate-950 px-10 py-7 rounded-[3rem] shadow-[0_40px_80px_rgba(0,0,0,0.6)] hover:bg-emerald-500 transition-all hover:scale-105 active:scale-95 overflow-hidden"
          >
-            <div className="absolute -inset-2 bg-emerald-500/20 rounded-[3rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-slate-900 flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-               <Zap className="h-6 w-6" />
+            {/* Animated Background Aura */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-4 border-[1px] border-dashed border-slate-950/5 rounded-full group-hover:border-slate-950/20"
+            />
+
+            <div className="relative z-10 w-12 h-12 rounded-[1.5rem] bg-slate-950 text-white flex items-center justify-center shadow-4xl group-hover:rotate-12 transition-transform duration-500">
+               <Zap className="h-6 w-6 fill-emerald-500" />
             </div>
-            <span className="font-black text-xs uppercase tracking-[0.3em]">Initiate Rescue</span>
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
-               <ChevronRight className="h-4 w-4" />
+            <div className="relative z-10 flex flex-col items-start pr-4">
+               <span className="font-black text-[10px] uppercase tracking-[0.4em] leading-none mb-1">Initiate</span>
+               <span className="font-black text-[10px] uppercase tracking-[0.4em] leading-none text-emerald-600 group-hover:text-slate-950 transition-colors">Rescue_Protocol</span>
+            </div>
+            <div className="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-slate-950/5 group-hover:bg-slate-950 group-hover:text-white transition-all">
+               <ChevronRight className="h-5 w-5" />
             </div>
          </Link>
       </motion.div>

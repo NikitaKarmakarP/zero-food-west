@@ -189,10 +189,29 @@ export const AppProvider = ({ children }) => {
   const getActiveDonations = () => donations.filter(d => d.status === 'pending');
   const getAcceptedDonations = () => donations.filter(d => d.status === 'accepted');
 
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('zw_theme');
+    return saved || 'dark';
+  });
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('zw_theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(theme);
+    // Force background color change to avoid white flashes
+    document.body.style.backgroundColor = theme === 'dark' ? '#020617' : '#ffffff';
+  }, [theme]);
+
   return (
     <AppContext.Provider value={{
       user, login, logout, donations, addDonation, acceptDonation, rejectDonation, getActiveDonations, getAcceptedDonations, 
-      language, setLanguage, t, notifications, addNotification, markAllAsRead, clearNotifications
+      language, setLanguage, t, notifications, addNotification, markAllAsRead, clearNotifications,
+      theme, toggleTheme
     }}>
       {children}
     </AppContext.Provider>

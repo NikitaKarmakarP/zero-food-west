@@ -1,18 +1,53 @@
-import { Truck, MapPin, CheckCircle, Package, Star, Navigation, Phone, ShieldCheck, Clock, ArrowRight, Activity, Terminal, Zap, ShieldAlert, ChevronRight, MessageSquare, Globe, Radar, Wind, Thermometer, Satellite } from 'lucide-react';
+import { Truck, MapPin, CheckCircle, Package, Star, Navigation, Phone, ShieldCheck, Clock, ArrowRight, Activity, Terminal, Zap, ShieldAlert, ChevronRight, MessageSquare, Globe, Radar, Wind, Thermometer, Satellite, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 
-export default function PickupTracking() {
-  const { getAcceptedDonations } = useAppContext();
-  const [rated, setRated] = useState({});
-  const [activeLog, setActiveLog] = useState(0);
-  const activePickups = getAcceptedDonations();
-  
-  const handleRating = (id, stars) => {
-    setRated({ ...rated, [id]: stars });
-  };
+const ProgressNode = ({ label, icon: Icon, active = false, completed = false, current = false }) => {
+  return (
+    <div className="flex flex-col items-center relative">
+      <motion.div 
+        initial={false}
+        animate={{ 
+          scale: current ? [1, 1.15, 1] : 1,
+          backgroundColor: active ? (current ? '#10b981' : '#1e293b') : 'rgba(255,255,255,0.05)',
+          color: active ? '#ffffff' : '#94a3b8',
+          borderColor: current ? '#10b981' : (active ? '#10b98130' : 'rgba(255,255,255,0.1)')
+        }}
+        transition={{ scale: { repeat: current ? Infinity : 0, duration: 2.5 } }}
+        className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center border-4 shadow-2xl relative z-20 transition-all duration-500`}
+      >
+         {completed ? <CheckCircle className="h-7 w-7" /> : <Icon className="h-7 w-7" />}
+         {current && (
+           <span className="absolute -inset-3 rounded-[1.7rem] border-2 border-emerald-400 animate-pulse opacity-40"></span>
+         )}
+      </motion.div>
+      <span className={`text-[10px] font-black uppercase tracking-[0.3em] mt-6 transition-colors duration-500 ${active ? 'text-emerald-400' : 'text-slate-400 opacity-60'}`}>
+        {label}
+      </span>
+    </div>
+  );
+};
 
+export default function PickupTracking() {
+  const context = useAppContext();
+  const navigate = useNavigate();
+  
+  // High-Performance Fallback Data
+  const demoMission = [{
+    id: 'MISSION_883921',
+    foodName: 'High-Integrity Meal Rescue',
+    quantity: '45+',
+    type: 'veg',
+    donorName: 'Skyline Plaza',
+    ngoName: 'Global Relief Cluster'
+  }];
+
+  const donations = context?.getAcceptedDonations() || [];
+  const activePickups = donations.length > 0 ? donations : demoMission;
+  const [activeLog, setActiveLog] = useState(0);
+  
   const dummyLogs = [
     { time: '10:45 AM', event: 'Mission initialized by NGO', status: 'verified' },
     { time: '10:52 AM', event: 'Volunteer Rajesh M. assigned', status: 'active' },
@@ -29,58 +64,74 @@ export default function PickupTracking() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 selection:bg-emerald-500/30 font-sans">
+    <div className="min-h-screen bg-white dark:bg-[#020617] pb-24 selection:bg-emerald-500/30 font-sans text-slate-950 dark:text-white transition-colors duration-500">
+      {/* Logistics Intelligence Ticker */}
+      <div className="bg-slate-50 dark:bg-emerald-500/5 border-b border-black/5 dark:border-white/5 py-4 overflow-hidden relative z-50">
+         <div className="flex whitespace-nowrap animate-marquee items-center gap-20">
+            {[1,2,3,4,5].map(i => (
+               <div key={i} className="flex items-center gap-16 text-[9px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.4em]">
+                 <span className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400"><Activity className="h-3 w-3" /> TRACKING_NODE: ACTIVE</span>
+                 <span className="flex items-center gap-3 text-blue-600 dark:text-blue-400"><Globe className="h-3 w-3" /> NETWORK: SYNCHRONIZED</span>
+                 <span className="flex items-center gap-3 text-amber-600 dark:text-amber-400"><Zap className="h-3 w-3" /> POWER_STATUS: OPTIMAL</span>
+                 <span className="flex items-center gap-3 text-purple-600 dark:text-purple-400"><Radar className="h-3 w-3" /> SATELLITE_LINK: LOCKED</span>
+              </div>
+            ))}
+         </div>
+      </div>
+
       {/* Cinematic Command Header */}
-      <section className="bg-slate-950 text-white pt-40 pb-56 relative overflow-hidden">
-        {/* Animated Grid & Radar Background */}
-        <div className="absolute inset-0 z-0 opacity-10">
-           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+      <section className="bg-slate-50 dark:bg-[#020617] text-slate-950 dark:text-white pt-24 pb-48 relative overflow-hidden transition-colors duration-500">
+        <div className="absolute inset-0 z-0">
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+           <div className="absolute inset-0 bg-[radial-gradient(#00000005_1px,transparent_1px)] dark:bg-[radial-gradient(#10b98105_1px,transparent_1px)] [background-size:20px_20px]"></div>
         </div>
         
-        {/* Peripheral Glows */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/4 opacity-50 dark:opacity-100"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/4 opacity-50 dark:opacity-100"></div>
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12">
-            <div className="max-w-3xl">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-16">
+            <div className="max-w-4xl">
               <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-black text-[10px] uppercase tracking-[0.4em] mb-10 backdrop-blur-3xl"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/10 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black text-[9px] uppercase tracking-[0.5em] mb-12 backdrop-blur-3xl shadow-sm"
               >
                 <div className="relative">
-                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
-                   <div className="w-2 h-2 rounded-full bg-emerald-500 absolute inset-0"></div>
+                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
+                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 absolute inset-0"></div>
                 </div>
-                Logistics Command Center v2.4
+                Logistics Command Center v4.0.2
               </motion.div>
               
               <motion.h1 
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-7xl md:text-9xl font-black mb-8 tracking-tighter leading-[0.85]"
+                className="text-8xl md:text-[10rem] font-black mb-10 tracking-tighter leading-[0.8] text-slate-950 dark:text-white"
               >
-                Mission <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400">Tracking.</span>
+                Mission <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-700 dark:from-emerald-400 dark:via-teal-400 dark:to-blue-500 italic">Tracking.</span>
               </motion.h1>
               
-              <p className="text-slate-400 text-2xl font-medium leading-relaxed opacity-80 max-w-2xl">
-                Real-time forensic monitoring of high-integrity food rescue operations across the urban infrastructure.
+              <p className="text-slate-600 dark:text-slate-400 text-2xl font-medium leading-relaxed opacity-90 dark:opacity-80 max-w-2xl border-l-2 border-emerald-500/30 pl-8">
+                Forensic monitoring of high-integrity food rescue operations across urban nodes. <span className="text-emerald-600 dark:text-emerald-400 font-black">Real-time telemetry active.</span>
               </p>
             </div>
 
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex gap-8"
+              className="flex gap-10"
             >
-              <div className="glass-panel-dark p-10 rounded-[3rem] bg-white/5 border-white/10 backdrop-blur-2xl flex items-center gap-8">
-                 <div className="w-20 h-20 bg-emerald-500/20 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-500/20">
-                    <Radar className="h-10 w-10 text-emerald-400" />
+              <div className="bg-white/70 dark:bg-white/[0.02] p-12 rounded-[4rem] border border-black/5 dark:border-white/5 backdrop-blur-3xl flex items-center gap-10 shadow-3xl dark:shadow-[0_40px_80px_rgba(0,0,0,0.4)] transition-all">
+                 <div className="w-24 h-24 bg-emerald-500/10 rounded-3xl flex items-center justify-center shadow-inner border border-emerald-500/20">
+                    <Radar className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />
                  </div>
                  <div>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Active Missions</p>
-                    <p className="text-6xl font-black text-white tracking-tighter">{activePickups.length}</p>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2">Live Assets</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-7xl font-black text-slate-950 dark:text-white tracking-tighter">{activePickups.length}</p>
+                      <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    </div>
                  </div>
               </div>
             </motion.div>
@@ -93,78 +144,80 @@ export default function PickupTracking() {
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-panel p-24 text-center rounded-[4rem] border-white shadow-4xl bg-white/80 backdrop-blur-3xl max-w-3xl mx-auto"
+            className="bg-white/80 dark:bg-white/[0.03] backdrop-blur-3xl p-24 text-center rounded-[5rem] border border-black/5 dark:border-white/5 shadow-4xl max-w-4xl mx-auto relative overflow-hidden"
           >
-            <div className="w-32 h-32 bg-slate-50 rounded-[3rem] flex items-center justify-center mx-auto mb-12 border border-slate-100 shadow-inner group overflow-hidden">
-               <Package className="h-12 w-12 text-slate-300 group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500" />
-            </div>
-            <h3 className="text-5xl font-black text-slate-900 mb-6 tracking-tight">System Standby</h3>
-            <p className="text-slate-500 font-medium text-2xl mb-14 max-w-md mx-auto leading-relaxed italic opacity-60">
-              "Awaiting the next signal to bridge the gap between waste and hunger."
-            </p>
-            <button 
-              onClick={() => navigate('/donate')}
-              className="bg-slate-900 text-white px-14 py-7 rounded-[2.5rem] font-black hover:bg-emerald-600 transition-all shadow-3xl shadow-slate-900/20 flex items-center gap-4 mx-auto text-xl group active:scale-95"
-            >
-              Initialize Donation <ArrowRight className="h-7 w-7 group-hover:translate-x-2 transition-transform" />
-            </button>
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#10b98105_0%,transparent_70%)]"></div>
+             <div className="w-40 h-40 bg-slate-50 dark:bg-white/5 rounded-[4rem] flex items-center justify-center mx-auto mb-16 border border-black/5 dark:border-white/10 shadow-inner group overflow-hidden relative z-10">
+                <Radar className="h-16 w-16 text-slate-300 dark:text-slate-500 animate-pulse" />
+             </div>
+             <h3 className="text-6xl font-black text-slate-950 dark:text-white mb-8 tracking-tighter relative z-10 uppercase">System Standby.</h3>
+             <p className="text-slate-400 dark:text-slate-400 font-medium text-2xl mb-16 max-w-xl mx-auto leading-relaxed italic opacity-60 relative z-10">
+               "Awaiting tactical signal to bridge urban waste gaps. All logistics nodes currently in scanning mode."
+             </p>
+             <button 
+               onClick={() => navigate('/donate')}
+               className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 px-16 py-8 rounded-[2.5rem] font-black hover:bg-emerald-500 hover:text-white transition-all shadow-4xl flex items-center gap-6 mx-auto text-xl group active:scale-95 relative z-10 uppercase tracking-widest"
+             >
+               Initialize Mission <ArrowRight className="h-8 w-8 group-hover:translate-x-3 transition-transform" />
+             </button>
           </motion.div>
         ) : (
           <div className="space-y-24">
             {activePickups.map((pickup, idx) => (
               <motion.div 
                 key={pickup.id}
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="glass-panel rounded-[4rem] overflow-hidden border-white/80 shadow-4xl bg-white/70 backdrop-blur-3xl flex flex-col lg:flex-row group"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="rounded-[4rem] overflow-hidden border border-black/5 dark:border-white/10 shadow-4xl dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] bg-white/70 dark:bg-white/[0.05] backdrop-blur-3xl flex flex-col lg:flex-row group transition-all"
               >
                 {/* Left Side: Telemetry Monitor */}
-                <div className="flex-1 p-12 md:p-16 border-r border-slate-100/50">
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-16">
+                <div className="flex-1 p-12 md:p-20 border-r border-black/5 dark:border-white/5 relative">
+                  <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-emerald-500/10 dark:border-emerald-500/20 rounded-tl-[4rem]"></div>
+                  
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20 relative z-10">
                     <div>
-                      <div className="flex items-center gap-4 mb-6">
-                        <span className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${pickup.type === 'veg' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                          {pickup.type} Recovery Protocol
+                      <div className="flex flex-wrap items-center gap-4 mb-8">
+                        <span className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] border shadow-sm ${pickup.type === 'veg' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'}`}>
+                          {pickup.type} RECOVERY_PROTOCOL
                         </span>
-                        <div className="flex items-center gap-2 text-slate-400 font-black text-[9px] uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-md">
-                          <Terminal className="h-3 w-3" /> ID: MISSION_{pickup.id.toString().slice(-4)}
+                        <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-black text-[9px] uppercase tracking-[0.3em] bg-slate-50 dark:bg-white/[0.02] px-4 py-2 rounded-xl border border-black/5 dark:border-white/5">
+                          <Terminal className="h-3.5 w-3.5" /> ID: MISSION_CORE_{pickup.id.toString().slice(-4)}
                         </div>
                       </div>
-                      <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tighter leading-none">{pickup.foodName}</h2>
-                      <div className="flex flex-wrap items-center gap-6 text-slate-500 font-bold">
-                        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-2xl">
-                           <Package className="h-5 w-5 text-emerald-500" /> 
-                           <span className="text-xl text-slate-900">{pickup.quantity} <span className="text-slate-400 text-sm">Servings</span></span>
+                      <h2 className="text-6xl md:text-8xl font-black text-slate-950 dark:text-white mb-8 tracking-tighter leading-none">{pickup.foodName}</h2>
+                      <div className="flex flex-wrap items-center gap-8 text-slate-400 font-bold">
+                        <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/[0.02] px-6 py-4 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-inner">
+                           <Package className="h-6 w-6 text-emerald-600 dark:text-emerald-500" /> 
+                           <span className="text-3xl font-black text-slate-950 dark:text-white">{pickup.quantity} <span className="text-slate-400 dark:text-slate-500 text-sm uppercase tracking-widest ml-2">Units</span></span>
                         </div>
-                        <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-2xl">
-                           <Globe className="h-5 w-5 text-blue-500" /> 
-                           <span className="text-slate-900">NGO: Global Relief</span>
+                        <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/[0.02] px-6 py-4 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-inner">
+                           <Globe className="h-6 w-6 text-blue-600 dark:text-blue-500" /> 
+                           <span className="text-slate-950 dark:text-white text-lg tracking-tight">NGO: Global Relief Cluster</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-end">
-                       <div className="bg-slate-900 text-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 border border-white/10 group-hover:bg-emerald-600 transition-colors duration-500">
+                    <div className="flex flex-col items-end gap-4">
+                       <div className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 px-10 py-5 rounded-[2.5rem] shadow-4xl flex items-center gap-4 border border-white/10 group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:text-slate-950 transition-all duration-700 hover:scale-105">
                          <div className="relative">
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping absolute inset-0"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 relative"></div>
+                            <div className="w-3 h-3 rounded-full bg-white dark:bg-slate-950 animate-ping absolute inset-0"></div>
+                            <div className="w-3 h-3 rounded-full bg-white dark:bg-slate-950 relative"></div>
                          </div>
-                         <span className="text-xs font-black uppercase tracking-[0.3em]">Operational</span>
+                         <span className="text-[10px] font-black uppercase tracking-[0.4em]">Operational</span>
                        </div>
-                       <p className="mt-4 text-slate-400 font-black text-[10px] uppercase tracking-[0.4em] tracking-tighter">Status: Synchronized with Satellite</p>
+                       <p className="text-slate-300 dark:text-slate-600 font-black text-[9px] uppercase tracking-[0.5em]">Sync_Status: NOMINAL</p>
                     </div>
                   </div>
 
-                  {/* High-Tech Progress Path */}
                   <div className="mb-20 relative px-4">
-                    <div className="absolute top-[32px] left-12 right-12 h-1.5 bg-slate-100 rounded-full z-0 overflow-hidden shadow-inner">
+                    <div className="absolute top-[32px] left-12 right-12 h-1.5 bg-slate-100 dark:bg-white/5 rounded-full z-0 overflow-hidden shadow-inner">
                        <motion.div 
                         initial={{ width: '0%' }}
                         whileInView={{ width: '68%' }}
                         viewport={{ once: true }}
                         transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                        className="h-full bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-700 dark:from-emerald-500 dark:via-teal-400 dark:to-blue-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                        />
                     </div>
                     <div className="relative z-10 flex justify-between">
@@ -174,32 +227,30 @@ export default function PickupTracking() {
                     </div>
                   </div>
 
-                  {/* Real-time Environmental Telemetry */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
                      {[
                        { label: 'Temp Control', value: '4.2°C', icon: Thermometer, color: 'emerald' },
                        { label: 'ETA Variance', value: '±2m', icon: Clock, color: 'blue' },
                        { label: 'Wind Speed', value: '12km/h', icon: Wind, color: 'slate' }
                      ].map((stat, i) => (
-                       <div key={i} className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 hover:bg-white transition-all shadow-sm">
+                       <div key={i} className="bg-slate-50 dark:bg-white/5 p-6 rounded-3xl border border-black/5 dark:border-white/5 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm">
                           <div className="flex items-center gap-3 mb-3">
-                             <stat.icon className={`h-4 w-4 text-${stat.color}-500`} />
-                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</span>
+                             <stat.icon className={`h-4 w-4 text-${stat.color}-600 dark:text-${stat.color}-500`} />
+                             <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest">{stat.label}</span>
                           </div>
-                          <div className="text-2xl font-black text-slate-900">{stat.value}</div>
+                          <div className="text-2xl font-black text-slate-950 dark:text-white">{stat.value}</div>
                        </div>
                      ))}
                   </div>
 
-                  {/* Logistics Asset Card */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-                     <div className="bg-slate-900 p-8 rounded-[3rem] border border-white/5 flex items-center gap-8 group/driver hover:scale-[1.02] transition-all duration-500 shadow-2xl overflow-hidden relative">
+                     <div className="bg-slate-950 dark:bg-slate-950 p-8 rounded-[3rem] border border-white/10 flex items-center gap-8 group/driver hover:scale-[1.02] transition-all duration-500 shadow-4xl overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-6 opacity-10">
                            <ShieldCheck className="h-20 w-20 text-white" />
                         </div>
                         <div className="relative shrink-0">
                           <img src="https://i.pravatar.cc/150?u=rajesh" className="w-24 h-24 rounded-[2rem] object-cover shadow-2xl border-2 border-white/10 group-hover/driver:scale-110 transition-transform duration-700" alt="Volunteer" />
-                          <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 text-white rounded-2xl flex items-center justify-center border-4 border-slate-900 shadow-xl">
+                          <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 text-white rounded-2xl flex items-center justify-center border-4 border-slate-950 shadow-xl">
                             <Star className="h-4 w-4 fill-current" />
                           </div>
                         </div>
@@ -207,20 +258,19 @@ export default function PickupTracking() {
                           <p className="text-2xl font-black text-white mb-2">Rajesh M.</p>
                           <div className="flex flex-col gap-1">
                              <span className="text-emerald-400 text-xs font-black uppercase tracking-widest">Elite Rescuer</span>
-                             <span className="text-slate-500 text-[10px] font-bold">850+ SUCCESSFUL MISSIONS</span>
+                             <span className="text-slate-400 text-[10px] font-bold">850+ SUCCESSFUL MISSIONS</span>
                           </div>
                         </div>
                      </div>
 
-                     <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-xl flex flex-col justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-slate-50/50 pointer-events-none"></div>
+                     <div className="bg-slate-100 dark:bg-white/5 p-8 rounded-[3rem] border border-black/5 dark:border-white/5 shadow-xl flex flex-col justify-center relative overflow-hidden">
                         <div className="relative z-10">
-                           <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">
+                           <div className="flex justify-between items-center text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-[0.3em] mb-6">
                               <span>Mission Log</span>
                               <div className="flex gap-1">
-                                 <div className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                                 <div className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse delay-75"></div>
-                                 <div className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse delay-150"></div>
+                                 <div className="w-1 h-3 bg-emerald-600 dark:bg-emerald-500 rounded-full animate-pulse"></div>
+                                 <div className="w-1 h-3 bg-emerald-600 dark:bg-emerald-500 rounded-full animate-pulse delay-75"></div>
+                                 <div className="w-1 h-3 bg-emerald-600 dark:bg-emerald-500 rounded-full animate-pulse delay-150"></div>
                               </div>
                            </div>
                            <AnimatePresence mode="wait">
@@ -231,8 +281,8 @@ export default function PickupTracking() {
                                exit={{ opacity: 0, y: -10 }}
                                className="flex flex-col gap-2"
                              >
-                                <span className="text-emerald-600 font-black text-xs tracking-widest">{dummyLogs[activeLog].time}</span>
-                                <span className="text-slate-900 font-black text-lg tracking-tight leading-tight">{dummyLogs[activeLog].event}</span>
+                                 <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs tracking-widest">{dummyLogs[activeLog].time}</span>
+                                 <span className="text-slate-950 dark:text-white font-black text-lg tracking-tight leading-tight">{dummyLogs[activeLog].event}</span>
                              </motion.div>
                            </AnimatePresence>
                         </div>
@@ -240,141 +290,128 @@ export default function PickupTracking() {
                   </div>
 
                   <div className="flex gap-6">
-                     <button className="flex-1 bg-slate-900 text-white font-black py-7 rounded-[2.5rem] hover:bg-emerald-600 transition-all shadow-3xl shadow-slate-900/20 flex items-center justify-center gap-4 group active:scale-95 text-lg">
+                     <button className="flex-1 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black py-7 rounded-[2.5rem] hover:bg-emerald-500 hover:text-white transition-all shadow-4xl flex items-center justify-center gap-4 group active:scale-95 text-lg">
                         Operational Comms <MessageSquare className="h-6 w-6 group-hover:rotate-12 transition-transform" />
                      </button>
-                     <button className="px-12 bg-white text-slate-900 border-2 border-slate-100 font-black py-7 rounded-[2.5rem] hover:border-emerald-500 transition-all flex items-center justify-center gap-4 shadow-xl hover:shadow-emerald-500/10 active:scale-95">
+                     <button className="px-12 bg-slate-50 dark:bg-white/5 text-slate-950 dark:text-white border border-black/5 dark:border-white/10 font-black py-7 rounded-[2.5rem] hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all flex items-center justify-center gap-4 shadow-xl active:scale-95">
                         <Phone className="h-6 w-6" />
                      </button>
                   </div>
                 </div>
-
                 {/* Right Side: Tactical Navigation Interface */}
-                <div className="lg:w-[48%] h-[500px] lg:h-auto min-h-[700px] relative bg-slate-900 overflow-hidden">
-                  {/* Digital Satellite Map Background */}
-                  <div className="absolute inset-0 grayscale opacity-40 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=22.5726,88.3639&zoom=15&size=1200x1200&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x334155&style=feature:landscape|element:geometry|color:0x0f172a&style=feature:water|element:geometry|color:0x1e293b&sensor=false')] bg-cover bg-center"></div>
+                <div className="lg:w-[48%] h-[600px] lg:h-auto min-h-[850px] relative bg-slate-100 dark:bg-[#01040a] overflow-hidden transition-colors duration-500">
+                  <div className="absolute inset-0 grayscale contrast-125 opacity-20 dark:opacity-30 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=22.5726,88.3639&zoom=15&size=1200x1200&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x334155&style=feature:landscape|element:geometry|color:0x0f172a&style=feature:water|element:geometry|color:0x1e293b&sensor=false')] bg-cover bg-center"></div>
                   
-                  {/* Digital Grid Overlay */}
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#10b98105_0%,transparent_70%)]"></div>
                   
-                  {/* Tactical Scan Line */}
                   <motion.div 
-                    animate={{ top: ['-10%', '110%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 right-0 h-[2px] bg-emerald-500/20 z-10"
+                    animate={{ top: ['-20%', '120%'] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-[1px] bg-emerald-500/40 z-10 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
                   />
 
-                  {/* Asset Indicator (The Vehicle) */}
                   <motion.div 
                     animate={{ 
-                      y: [0, -20, 0],
-                      x: [0, 15, 0],
-                      rotate: [0, 5, 0]
+                      y: [0, -40, 0],
+                      x: [0, 30, 0],
+                      rotate: [0, 8, 0]
                     }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
                   >
                     <div className="relative">
-                       <div className="w-32 h-32 rounded-full border-2 border-emerald-500/20 animate-[ping_3s_infinite] absolute -inset-8"></div>
-                       <div className="w-24 h-24 rounded-full border border-emerald-500/30 animate-[ping_4s_infinite] absolute -inset-4"></div>
+                       <div className="w-48 h-48 rounded-full border border-emerald-500/10 animate-[ping_4s_infinite] absolute -inset-12"></div>
+                       <div className="w-32 h-32 rounded-full border-2 border-emerald-500/20 animate-[ping_3s_infinite] absolute -inset-4"></div>
                        
-                       <div className="w-16 h-16 bg-white rounded-[1.5rem] flex items-center justify-center text-slate-900 border-[6px] border-slate-900 shadow-[0_0_40px_rgba(16,185,129,0.4)] relative z-10">
-                          <Truck className="h-8 w-8" />
+                       <div className="w-24 h-24 bg-slate-950 dark:bg-white rounded-[2rem] flex items-center justify-center text-white dark:text-slate-950 border-[8px] border-white dark:border-[#01040a] shadow-4xl relative z-10">
+                          <Truck className="h-12 w-12" />
                        </div>
                        
-                       {/* Floating Label */}
-                       <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 whitespace-nowrap bg-emerald-500 text-slate-950 px-4 py-1.5 rounded-full font-black text-[9px] uppercase tracking-widest shadow-2xl">
-                          ASSET_BRAVO_01
+                       <div className="absolute top-full mt-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+                          <div className="bg-emerald-600 dark:bg-emerald-500 text-white dark:text-slate-950 px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-[0.4em] shadow-2xl">
+                             ASSET_ACTIVE_NODE_01
+                          </div>
+                          <div className="text-emerald-600 dark:text-emerald-500 font-black text-[8px] uppercase tracking-widest opacity-60">
+                             LAT: 22.5726 | LON: 88.3639
+                          </div>
                        </div>
                     </div>
                   </motion.div>
 
-                  {/* Tactical Navigation HUD */}
-                  <div className="absolute bottom-10 left-10 right-10 z-40">
-                     <div className="glass-panel-dark p-10 rounded-[3.5rem] border-white/10 shadow-4xl bg-slate-900/90 backdrop-blur-3xl overflow-hidden relative">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
-                        
-                        <div className="flex justify-between items-end relative z-10">
-                           <div className="space-y-2">
-                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">ETA PROJECTION</p>
-                              <div className="flex items-baseline gap-2">
-                                 <span className="text-6xl font-black text-white tracking-tighter">12</span>
-                                 <span className="text-xl font-black text-emerald-400 uppercase tracking-widest">Mins</span>
-                              </div>
-                              <p className="text-xs font-bold text-emerald-500/80 tracking-wide flex items-center gap-2">
-                                 <Satellite className="h-4 w-4" /> Optimizing Signal Path...
-                              </p>
+                  <div className="absolute top-10 left-10 z-40 space-y-4">
+                     <div className="bg-white/50 dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 p-6 rounded-3xl shadow-xl">
+                        <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase tracking-widest">
+                           <Activity className="h-4 w-4" /> Live_Telemetry
+                        </div>
+                        <div className="mt-4 space-y-2">
+                           <div className="h-1 w-32 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+                              <motion.div animate={{ width: ['20%', '80%', '20%'] }} transition={{ duration: 3, repeat: Infinity }} className="h-full bg-emerald-600 dark:bg-emerald-500" />
                            </div>
-                           
-                           <div className="text-right space-y-3">
-                              <div className="space-y-1">
-                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">DIST_REMAINING</p>
-                                 <p className="text-3xl font-black text-white tracking-tighter">2.4 <span className="text-sm text-slate-500">KM</span></p>
-                              </div>
-                              <button className="bg-emerald-500 text-slate-950 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-white transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
-                                 DEPLOY MAPS <Navigation className="h-4 w-4" />
-                              </button>
+                           <div className="h-1 w-24 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+                              <motion.div animate={{ width: ['60%', '30%', '60%'] }} transition={{ duration: 2, repeat: Infinity }} className="h-full bg-blue-600 dark:bg-blue-500" />
                            </div>
                         </div>
                      </div>
                   </div>
 
-                  {/* Tactical Control Buttons */}
-                  <div className="absolute top-10 right-10 flex flex-col gap-4 z-40">
-                    {[Radar, Satellite, ShieldAlert].map((Icon, i) => (
-                      <button key={i} className="w-14 h-14 rounded-2xl bg-slate-900/80 backdrop-blur-xl shadow-2xl flex items-center justify-center text-white border border-white/10 hover:bg-emerald-600 hover:text-white transition-all hover:scale-110 active:scale-95 group">
-                        <Icon className="h-6 w-6 group-hover:rotate-12 transition-transform" />
-                      </button>
-                    ))}
-                  </div>
+                  <div className="absolute bottom-10 left-10 right-10 z-40">
+                     <div className="bg-white/90 dark:bg-[#020617]/90 backdrop-blur-3xl p-12 rounded-[4rem] border border-black/5 dark:border-white/10 shadow-4xl overflow-hidden relative">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-700 dark:from-emerald-500 dark:via-teal-400 dark:to-blue-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]"></div>
+                        
+                        <div className="flex justify-between items-end relative z-10">
+                           <div className="space-y-4">
+                              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em]">LOGISTICS_ETA_PROJECTION</p>
+                              <div className="flex items-baseline gap-4">
+                                 <span className="text-8xl font-black text-slate-950 dark:text-white tracking-tighter leading-none">12</span>
+                                 <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em]">Mins</span>
+                              </div>
+                              <p className="text-xs font-black text-emerald-600 dark:text-emerald-500 flex items-center gap-3">
+                                 <Satellite className="h-5 w-5 animate-pulse" /> NETWORK_OPTIMIZATION_IN_PROGRESS
+                              </p>
+                           </div>
+                           
+                           <div className="text-right space-y-6">
+                              <div className="space-y-2">
+                                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em]">TOTAL_REMAINING_RADIUS</p>
+                                 <p className="text-5xl font-black text-slate-950 dark:text-white tracking-tighter">2.4 <span className="text-lg text-slate-400 dark:text-slate-600 ml-2">KM</span></p>
+                              </div>
+                              <button className="bg-slate-950 dark:bg-emerald-500 text-white dark:text-slate-950 px-10 py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-emerald-600 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition-all shadow-4xl active:scale-95 group">
+                                 LAUNCH_TACTICAL_MAP <Navigation className="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                               </button>
+                            </div>
+                         </div>
+                      </div>
+                   </div>
+ 
+                   <div className="absolute top-10 right-10 flex flex-col gap-6 z-40">
+                     {[Radar, Satellite, ShieldAlert].map((Icon, i) => (
+                       <button key={i} className="w-16 h-16 rounded-[1.5rem] bg-white/80 dark:bg-white/5 backdrop-blur-3xl shadow-4xl flex items-center justify-center text-slate-950 dark:text-white border border-black/5 dark:border-white/10 hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white dark:hover:text-slate-950 transition-all hover:scale-110 active:scale-95 group relative">
+                         <Icon className="h-7 w-7 group-hover:rotate-12 transition-transform" />
+                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950 animate-pulse"></div>
+                       </button>
+                     ))}
+                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
-      </div>
 
-      {/* Operational Compliance Footer */}
-      <div className="max-w-7xl mx-auto px-4 mt-32 text-center">
-         <motion.div 
-           initial={{ opacity: 0 }}
-           whileInView={{ opacity: 1 }}
-           className="inline-flex items-center gap-4 text-slate-400 text-sm font-black bg-white px-8 py-4 rounded-[2.5rem] border border-slate-200 shadow-xl"
-         >
-            <ShieldCheck className="h-5 w-5 text-emerald-500" /> 
-            SSL SECURE OPS
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-            AES-256 ENCRYPTED TELEMETRY
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-            <Zap className="h-5 w-5 text-amber-500" /> NODE_SYNCED
-         </motion.div>
+        <div className="max-w-7xl mx-auto px-4 mt-48 text-center">
+           <motion.div 
+             initial={{ opacity: 0 }}
+             whileInView={{ opacity: 1 }}
+             className="inline-flex flex-wrap justify-center items-center gap-8 text-slate-400 dark:text-slate-500 text-[10px] font-black bg-slate-50 dark:bg-white/[0.02] px-12 py-6 rounded-[3rem] border border-black/5 dark:border-white/5 shadow-3xl backdrop-blur-xl uppercase tracking-[0.3em]"
+           >
+              <div className="flex items-center gap-3"><ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-500" /> SSL_SECURE_PROTOCOLS</div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+              <div className="flex items-center gap-3"><Lock className="h-4 w-4 text-blue-600 dark:text-blue-500" /> AES_256_TELEMETRY_ENCRYPTION</div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800"></div>
+              <div className="flex items-center gap-3"><Zap className="h-4 w-4 text-amber-600 dark:text-amber-400" /> NODE_SYNC_v9.4</div>
+           </motion.div>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function ProgressNode({ label, icon: Icon, active = false, completed = false, current = false }) {
-  return (
-    <div className="flex flex-col items-center relative">
-      <motion.div 
-        initial={false}
-        animate={{ 
-          scale: current ? [1, 1.15, 1] : 1,
-          backgroundColor: active ? (current ? '#10b981' : '#0f172a') : '#ffffff',
-          color: active ? '#ffffff' : '#94a3b8',
-          borderColor: current ? '#10b981' : (active ? '#0f172a' : '#f1f5f9')
-        }}
-        transition={{ scale: { repeat: current ? Infinity : 0, duration: 2.5 } }}
-        className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center border-4 shadow-2xl relative z-20 transition-all duration-500`}
-      >
-         {completed ? <CheckCircle className="h-7 w-7" /> : <Icon className="h-7 w-7" />}
-         {current && (
-           <span className="absolute -inset-3 rounded-[1.7rem] border-2 border-emerald-400 animate-pulse opacity-40"></span>
-         )}
-      </motion.div>
-      <span className={`text-[10px] font-black uppercase tracking-[0.3em] mt-6 transition-colors duration-500 ${active ? 'text-slate-900' : 'text-slate-300'}`}>
-        {label}
-      </span>
     </div>
   );
 }
