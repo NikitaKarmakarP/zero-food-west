@@ -207,11 +207,30 @@ export const AppProvider = ({ children }) => {
     document.body.style.backgroundColor = theme === 'dark' ? '#020617' : '#ffffff';
   }, [theme]);
 
+  const [fontSizeScale, setFontSizeScale] = useState(() => {
+    const saved = localStorage.getItem('zw_font_scale');
+    return saved ? parseFloat(saved) : 1;
+  });
+
+  const increaseFontSize = () => {
+    setFontSizeScale(prev => Math.min(prev + 0.1, 1.5));
+  };
+
+  const decreaseFontSize = () => {
+    setFontSizeScale(prev => Math.max(prev - 0.1, 0.8));
+  };
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSizeScale * 100}%`;
+    localStorage.setItem('zw_font_scale', fontSizeScale);
+  }, [fontSizeScale]);
+
   return (
     <AppContext.Provider value={{
       user, login, logout, donations, addDonation, acceptDonation, rejectDonation, getActiveDonations, getAcceptedDonations, 
       language, setLanguage, t, notifications, addNotification, markAllAsRead, clearNotifications,
-      theme, toggleTheme
+      theme, toggleTheme,
+      fontSizeScale, increaseFontSize, decreaseFontSize
     }}>
       {children}
     </AppContext.Provider>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
-import { MapPin, Utensils, Award, Leaf, ChevronRight, Heart, Bell, Globe, Users, Activity, Zap, Star, MessageSquare, ShieldCheck, Mail, ArrowRight, Trophy, Calculator, Radar, Sun, Moon, User, Settings, LogOut, LayoutDashboard } from 'lucide-react'
+import { MapPin, Utensils, Award, Leaf, ChevronRight, Heart, Bell, Globe, Users, Activity, Zap, Star, MessageSquare, ShieldCheck, Mail, ArrowRight, Trophy, Calculator, Radar, Sun, Moon, User, Settings, LogOut, LayoutDashboard, Plus, Minus } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import PostFood from './pages/PostFood'
@@ -21,7 +21,7 @@ import { useAppContext } from './context/AppContext'
 function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, logout, t, language, setLanguage, notifications, markAllAsRead, clearNotifications, theme, toggleTheme } = useAppContext()
+  const { user, logout, t, language, setLanguage, notifications, markAllAsRead, clearNotifications, theme, toggleTheme, increaseFontSize, decreaseFontSize, fontSizeScale } = useAppContext()
   const [showNotifications, setShowNotifications] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -110,6 +110,27 @@ function Navbar() {
 
               {/* Action Tools */}
               <div className="flex items-center gap-3 relative z-10">
+                {/* Font Size Toggle */}
+                <div className="hidden md:flex items-center bg-slate-100/50 dark:bg-white/5 rounded-xl p-1 gap-1 border border-slate-200 dark:border-white/10">
+                  <button 
+                    onClick={decreaseFontSize}
+                    disabled={fontSizeScale <= 0.8}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 transition-all disabled:opacity-30"
+                    aria-label="Decrease Font Size"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  <span className="text-[10px] font-black text-slate-400 px-1 w-8 text-center">{Math.round(fontSizeScale * 100)}%</span>
+                  <button 
+                    onClick={increaseFontSize}
+                    disabled={fontSizeScale >= 1.5}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 transition-all disabled:opacity-30"
+                    aria-label="Increase Font Size"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
+
                 {/* Theme Toggle */}
                 <button 
                   onClick={toggleTheme}
