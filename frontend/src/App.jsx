@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import { MapPin, Utensils, Award, Leaf, ChevronRight, Heart, Bell, Globe, Users, Activity, Zap, Star, MessageSquare, ShieldCheck, Mail, ArrowRight, Trophy, Calculator, Radar, Sun, Moon, User, Settings, LogOut, LayoutDashboard } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,6 +15,7 @@ import SafetySystem from './pages/SafetySystem'
 import PickupTracking from './pages/PickupTracking'
 import PolicyManual from './pages/PolicyManual'
 import Leaderboard from './pages/Leaderboard'
+import SmartRecipe from './pages/SmartRecipe'
 import { useAppContext } from './context/AppContext'
 
 function Navbar() {
@@ -24,6 +25,15 @@ function Navbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   const unreadCount = notifications.filter(n => n.unread).length;
   
@@ -31,6 +41,7 @@ function Navbar() {
     { name: t('donate'), path: '/donate' },
     { name: t('events'), path: '/events' },
     { name: t('map'), path: '/map' },
+    { name: 'Recipes', path: '/recipes' },
     { name: 'Leaderboard', path: '/leaderboard' },
     { name: t('safety'), path: '/safety' },
   ]
@@ -53,87 +64,59 @@ function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-6 left-0 right-0 z-[100] px-4 md:px-8"
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? 'py-4 px-4 md:px-8' : 'py-6 px-4 md:px-8'}`}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="relative group">
-          {/* Outer Glow Effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/10 to-emerald-500/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+        <div className="relative group mx-auto">
+          {/* Subtle Outer Glow */}
+          <div className={`absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-blue-500/20 rounded-[2.5rem] blur-xl transition-all duration-700 ${scrolled ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}></div>
           
-          <div className="relative backdrop-blur-3xl bg-white/80 dark:bg-black/60 border border-white/20 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] dark:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] rounded-[3rem] px-6 md:px-10 py-4">
-            <div className="flex justify-between items-center">
+          <div className="relative backdrop-blur-2xl bg-white/80 dark:bg-slate-900/80 border border-white/50 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-[2.5rem] px-6 py-3.5 flex justify-between items-center transition-all duration-500 ring-1 ring-black/5 dark:ring-white/5">
+              
               {/* Brand Logo */}
-              <Link to="/" className="flex items-center gap-4 group/logo">
-                <div className="relative">
-                  <div className="absolute -inset-2 bg-emerald-500/20 rounded-2xl blur-lg opacity-0 group-hover/logo:opacity-100 transition-opacity"></div>
-                  <div className="relative bg-gradient-to-br from-emerald-400 to-teal-600 p-2.5 rounded-2xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-500">
-                    <Leaf className="h-6 w-6 text-white" />
-                  </div>
+              <Link to="/" className="flex items-center gap-3 group/logo relative z-10">
+                <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-500/30 group-hover/logo:shadow-emerald-500/50 group-hover/logo:scale-105 transition-all duration-300">
+                  <Leaf className="h-5 w-5 text-white drop-shadow-md" />
                 </div>
-                <span className="text-2xl font-black tracking-tighter text-slate-950 dark:text-white uppercase italic">
-                  ZeroWaste<span className="text-emerald-500 group-hover/logo:animate-pulse">.</span>
+                <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Zero<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">Waste</span><span className="text-emerald-500">.</span>
                 </span>
               </Link>
 
               {/* Desktop Nav Items */}
-              <div className="hidden lg:flex items-center gap-1">
+              <div className="hidden lg:flex items-center gap-2 relative z-10">
                 {navItems.map(item => (
                   <Link 
                     key={item.name}
                     to={item.path} 
-                    className="relative px-5 py-3 rounded-2xl group/nav"
+                    className="relative px-4 py-2 rounded-xl group/nav overflow-hidden transition-all"
                   >
-                    <span className={`relative z-10 font-black text-[10px] uppercase tracking-[0.2em] transition-colors duration-300 ${
-                      location.pathname === item.path ? 'text-white dark:text-slate-950' : 'text-slate-500 group-hover/nav:text-slate-950 dark:group-hover/nav:text-white'
+                    <span className={`relative z-10 font-semibold text-sm transition-colors duration-300 ${
+                      location.pathname === item.path ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-600 dark:text-slate-300 group-hover/nav:text-slate-900 dark:group-hover/nav:text-white'
                     }`}>
                       {item.name}
                     </span>
-                    {location.pathname === item.path ? (
+                    {location.pathname === item.path && (
                       <motion.div 
-                        layoutId="nav-pill"
-                        className="absolute inset-0 bg-slate-950 dark:bg-white rounded-2xl shadow-xl"
+                        layoutId="active-nav-pill"
+                        className="absolute inset-0 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
-                    ) : (
-                      <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl opacity-0 group-hover/nav:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100" />
                     )}
+                    <div className="absolute inset-0 bg-slate-100 dark:bg-white/5 rounded-xl opacity-0 group-hover/nav:opacity-100 transition-opacity duration-300 scale-95 group-hover/nav:scale-100" />
                   </Link>
                 ))}
               </div>
 
               {/* Action Tools */}
-              <div className="flex items-center gap-2 md:gap-4">
-                {/* Language Picker */}
-                <div className="relative group/lang hidden sm:block">
-                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white transition-all">
-                    <Globe className="h-4 w-4" />
-                    <span className="font-black text-[10px] uppercase tracking-widest">{language}</span>
-                  </button>
-                  <div className="absolute top-full right-0 mt-4 w-48 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] shadow-4xl border border-black/5 dark:border-white/10 opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all p-3 z-50">
-                    {[
-                      { code: 'en', name: 'English', native: 'English' },
-                      { code: 'hi', name: 'Hindi', native: 'हिंदी' },
-                      { code: 'bn', name: 'Bengali', native: 'বাংলা' }
-                    ].map(lang => (
-                      <button 
-                        key={lang.code}
-                        onClick={() => setLanguage(lang.code)} 
-                        className={`w-full flex justify-between items-center px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                          language === lang.code ? 'bg-emerald-500 text-white' : 'text-slate-500 hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-white'
-                        }`}
-                      >
-                        {lang.name} <span className="opacity-50 text-[8px]">{lang.native}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+              <div className="flex items-center gap-3 relative z-10">
                 {/* Theme Toggle */}
                 <button 
                   onClick={toggleTheme}
-                  className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white transition-all shadow-sm hover:scale-110 active:scale-95"
+                  className="p-2.5 rounded-xl bg-slate-100/50 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+                  aria-label="Toggle Theme"
                 >
-                  {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </button>
 
                 {/* Notifications */}
@@ -144,16 +127,17 @@ function Navbar() {
                         setShowNotifications(!showNotifications);
                         if (!showNotifications) markAllAsRead();
                       }}
-                      className={`relative p-3 rounded-2xl transition-all border ${
+                      className={`relative p-2.5 rounded-xl transition-all ${
                         showNotifications 
-                        ? 'bg-emerald-500 text-white border-emerald-400' 
-                        : 'bg-black/5 dark:bg-white/5 text-slate-500 hover:text-slate-950 dark:hover:text-white border-transparent'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                        : 'bg-slate-100/50 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10'
                       }`}
                     >
-                      <Bell className="h-5 w-5" />
+                      <Bell className="h-4 w-4" />
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[8px] font-black h-5 w-5 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-950 shadow-lg">
-                          {unreadCount}
+                        <span className="absolute top-1 right-1 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border-2 border-white dark:border-slate-900"></span>
                         </span>
                       )}
                     </button>
@@ -161,32 +145,41 @@ function Navbar() {
                     <AnimatePresence>
                       {showNotifications && (
                         <motion.div 
-                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                          className="absolute right-0 mt-6 w-80 md:w-96 bg-white/95 dark:bg-slate-950/98 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_40px_120px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 z-50 flex flex-col overflow-hidden"
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="absolute right-0 mt-4 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl z-50 overflow-hidden"
                         >
-                          <div className="p-8 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-slate-50 dark:bg-white/[0.02]">
-                            <h3 className="font-black text-slate-950 dark:text-white tracking-tighter uppercase text-lg italic">Mission Logs</h3>
+                          <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+                            <h3 className="font-bold text-slate-900 dark:text-white">Notifications</h3>
                             {notifications.length > 0 && (
-                              <button onClick={clearNotifications} className="text-[9px] uppercase tracking-[0.4em] font-black text-slate-400 hover:text-rose-500 transition-colors">Purge</button>
+                              <button onClick={clearNotifications} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">Clear all</button>
                             )}
                           </div>
-                          <div className="max-h-[400px] overflow-y-auto no-scrollbar py-2">
+                          <div className="max-h-80 overflow-y-auto no-scrollbar py-2">
                             {notifications.length === 0 ? (
-                              <div className="py-20 text-center">
-                                <Activity className="h-12 w-12 text-slate-200 dark:text-slate-800 mx-auto mb-4" />
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Active Feeds</p>
+                              <div className="py-12 text-center flex flex-col items-center">
+                                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-3">
+                                  <Bell className="h-5 w-5 text-slate-400" />
+                                </div>
+                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">You're all caught up</p>
                               </div>
                             ) : (
                               notifications.map(notif => (
-                                <div key={notif.id} className="px-8 py-6 hover:bg-black/5 dark:hover:bg-white/[0.03] transition-all cursor-pointer border-b border-black/[0.03] dark:border-white/[0.03] last:border-0 group/msg">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <span className="font-black text-slate-950 dark:text-white text-sm tracking-tight group-hover/msg:text-emerald-500 transition-colors">{notif.title}</span>
-                                    {notif.unread && <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-lg" />}
+                                <div 
+                                  key={notif.id} 
+                                  onClick={() => {
+                                    setShowNotifications(false);
+                                    if (notif.path) navigate(notif.path);
+                                  }}
+                                  className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group/msg border-b border-slate-50 dark:border-slate-800/50 last:border-0"
+                                >
+                                  <div className="flex justify-between items-start mb-1">
+                                    <span className="font-semibold text-sm text-slate-900 dark:text-white group-hover/msg:text-emerald-600 dark:group-hover/msg:text-emerald-400 transition-colors">{notif.title}</span>
+                                    {notif.unread && <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5" />}
                                   </div>
-                                  <p className="text-xs text-slate-500 font-medium leading-relaxed mb-3">{notif.message}</p>
-                                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{notif.time}</span>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-2 line-clamp-2">{notif.message}</p>
+                                  <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">{notif.time}</span>
                                 </div>
                               ))
                             )}
@@ -200,19 +193,19 @@ function Navbar() {
                 {/* Profile/Auth Dropdown */}
                 <div className="relative">
                   {user ? (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center">
                       <button 
                         onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                        className="flex items-center gap-3 p-1.5 pr-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all group relative overflow-hidden"
+                        className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all group shadow-sm hover:shadow-md"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-xs shadow-inner">
                           {user.name?.substring(0, 2).toUpperCase()}
                         </div>
-                        <div className="hidden sm:flex flex-col items-start">
-                          <span className="font-black text-[8px] text-slate-950 dark:text-white uppercase tracking-[0.2em]">{user.name}</span>
-                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em]">{user.role}</span>
+                        <div className="hidden sm:flex flex-col items-start mr-1">
+                          <span className="font-semibold text-xs text-slate-900 dark:text-white">{user.name}</span>
+                          <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 capitalize">{user.role}</span>
                         </div>
-                        <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${showProfileDropdown ? 'rotate-90' : ''}`} />
+                        <ChevronRight className={`h-3 w-3 text-slate-400 transition-transform duration-300 hidden sm:block ${showProfileDropdown ? 'rotate-90' : ''}`} />
                       </button>
 
                       <AnimatePresence>
@@ -225,70 +218,70 @@ function Navbar() {
                             />
                             
                             <motion.div 
-                              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
                               animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                              className="absolute right-0 mt-4 w-72 bg-white/95 dark:bg-slate-950/98 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_40px_120px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 z-[110] overflow-hidden"
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              className="absolute right-0 mt-4 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl z-[110] overflow-hidden"
                             >
                               {/* Dropdown Header */}
-                              <div className="p-8 border-b border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                              <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                                 <div className="flex items-center gap-4 mb-4">
-                                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black text-lg shadow-xl shadow-emerald-500/20">
+                                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-lg shadow-inner">
                                     {user.name?.substring(0, 1).toUpperCase()}
                                   </div>
                                   <div className="flex flex-col">
-                                    <span className="font-black text-sm text-slate-950 dark:text-white uppercase tracking-tighter italic">{user.name}</span>
-                                    <span className="text-[10px] text-slate-500 font-medium lowercase tracking-tight">{user.email}</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">{user.name}</span>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 truncate w-32">{user.email}</span>
                                   </div>
                                 </div>
                                 
-                                <div className="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
                                    <div className="flex items-center gap-2">
                                       <Zap className="h-4 w-4 text-emerald-500 fill-emerald-500" />
-                                      <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Impact Core</span>
+                                      <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Impact Points</span>
                                    </div>
-                                   <span className="text-xl font-black text-slate-950 dark:text-white italic">{user.points || 0}</span>
+                                   <span className="text-sm font-bold text-slate-900 dark:text-white">{user.points || 0}</span>
                                 </div>
                               </div>
 
                               {/* Dropdown Menu */}
-                              <div className="p-3">
+                              <div className="p-2">
                                 <Link 
                                   to="/profile" 
                                   onClick={() => setShowProfileDropdown(false)}
-                                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
                                 >
-                                  <User className="h-5 w-5 group-hover/item:text-emerald-500 transition-colors" />
-                                  <span className="font-black text-[10px] uppercase tracking-widest">Bio-Profile</span>
+                                  <User className="h-4 w-4" />
+                                  My Profile
                                 </Link>
                                 
                                 <Link 
                                   to="/dashboard" 
                                   onClick={() => setShowProfileDropdown(false)}
-                                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
                                 >
-                                  <LayoutDashboard className="h-5 w-5 group-hover/item:text-blue-500 transition-colors" />
-                                  <span className="font-black text-[10px] uppercase tracking-widest">Command Center</span>
+                                  <LayoutDashboard className="h-4 w-4" />
+                                  Dashboard
                                 </Link>
 
                                 <button 
-                                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-500 hover:text-slate-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all group/item"
+                                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
                                 >
-                                  <Settings className="h-5 w-5 group-hover/item:rotate-90 transition-transform" />
-                                  <span className="font-black text-[10px] uppercase tracking-widest">Sys_Settings</span>
+                                  <Settings className="h-4 w-4" />
+                                  Settings
                                 </button>
                                 
-                                <div className="h-px bg-black/5 dark:bg-white/5 my-2 mx-4" />
+                                <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
                                 
                                 <button 
                                   onClick={() => {
                                     setShowProfileDropdown(false);
                                     logout();
                                   }}
-                                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-rose-500 hover:bg-rose-500 hover:text-white transition-all group/item shadow-sm"
+                                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all font-medium text-sm"
                                 >
-                                  <LogOut className="h-5 w-5" />
-                                  <span className="font-black text-[10px] uppercase tracking-widest text-inherit">Terminate Link</span>
+                                  <LogOut className="h-4 w-4" />
+                                  Sign Out
                                 </button>
                               </div>
                             </motion.div>
@@ -299,9 +292,9 @@ function Navbar() {
                   ) : (
                     <Link 
                       to="/login" 
-                      className="px-8 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black text-[10px] uppercase tracking-widest shadow-xl hover:-translate-y-0.5 transition-all"
+                      className="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2"
                     >
-                      Initialize Uplink
+                      Sign In <ArrowRight className="h-4 w-4" />
                     </Link>
                   )}
                 </div>
@@ -309,12 +302,11 @@ function Navbar() {
                 {/* Mobile Menu Toggle */}
                 <button 
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="lg:hidden p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-slate-500"
+                  className="lg:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300"
                 >
-                  <Activity className={`h-6 w-6 transition-transform ${isMobileMenuOpen ? 'rotate-90 text-emerald-500' : ''}`} />
+                  <Activity className={`h-5 w-5 transition-transform ${isMobileMenuOpen ? 'rotate-90 text-emerald-500' : ''}`} />
                 </button>
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -323,57 +315,60 @@ function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden mt-6 mx-4 bg-slate-950/95 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden border border-white/5 shadow-4xl"
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="md:hidden mx-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl rounded-[2rem] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl"
           >
-            <div className="flex flex-col p-8 gap-6">
+            <div className="flex flex-col p-6 gap-2">
               {navItems.map(item => (
                 <Link 
                   key={item.name}
                   to={item.path} 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-8 py-5 rounded-2xl font-black text-white hover:bg-white/5 transition-all flex justify-between items-center group text-xs uppercase tracking-[0.3em]"
+                  className="px-6 py-4 rounded-xl font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all flex justify-between items-center text-base"
                 >
                   {item.name}
-                  <ChevronRight className="h-4 w-4 text-emerald-500" />
+                  <ChevronRight className="h-4 w-4 text-slate-400" />
                 </Link>
               ))}
-              <div className="h-px bg-white/5 my-2"></div>
+              <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
               {user ? (
-                <div className="flex flex-col gap-4">
-                  <div className="px-8 py-4 rounded-3xl bg-white/5 border border-white/5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-black">
+                <div className="flex flex-col gap-2">
+                  <div className="px-6 py-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center gap-4 mb-2">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-lg">
                       {user.name?.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-black text-white uppercase text-[10px] tracking-widest">{user.name}</span>
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-3 w-3 text-emerald-400 fill-emerald-400" />
-                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{user.points} Points</span>
-                      </div>
+                      <span className="font-bold text-slate-900 dark:text-white text-base">{user.name}</span>
+                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 capitalize">{user.role}</span>
                     </div>
                   </div>
                   <Link 
                     to="/profile" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="px-8 py-4 rounded-2xl font-black text-slate-400 hover:text-white hover:bg-white/5 transition-all text-[10px] uppercase tracking-[0.3em]"
+                    className="px-6 py-4 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all flex items-center gap-3"
                   >
-                    View Bio-Profile
+                    <User className="h-5 w-5" /> View Profile
                   </Link>
                   <button 
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       logout();
                     }} 
-                    className="w-full py-5 text-rose-500 font-black text-left px-8 text-[10px] uppercase tracking-[0.4em] flex items-center gap-4 group"
+                    className="px-6 py-4 rounded-xl font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all flex items-center gap-3 w-full text-left"
                   >
-                    Terminate Link <LogOut className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
+                    <LogOut className="h-5 w-5" /> Sign Out
                   </button>
                 </div>
               ) : (
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-5 text-emerald-400 font-black text-left px-8 text-[10px] uppercase tracking-[0.4em]">Initialize Uplink</Link>
+                <Link 
+                  to="/login" 
+                  onClick={() => setIsMobileMenuOpen(false)} 
+                  className="w-full py-4 text-center font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl mt-2"
+                >
+                  Sign In
+                </Link>
               )}
             </div>
           </motion.div>
@@ -1737,78 +1732,168 @@ function App() {
                  <Leaderboard />
               </motion.div>
             } />
+            <Route path="/recipes" element={
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+                 <SmartRecipe />
+              </motion.div>
+            } />
           </Routes>
         </AnimatePresence>
       </main>
-      <footer className="py-24 bg-[#020617] border-t border-white/5 relative overflow-hidden">
-        {/* Subtle Background Markings */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-[0.02] pointer-events-none select-none font-black text-[20rem] flex items-center justify-center italic">
-           ZEROWASTE
+      <footer className="relative bg-[#020617] pt-32 pb-10 overflow-hidden border-t border-emerald-500/20 shadow-[inset_0_40px_100px_rgba(16,185,129,0.02)]">
+        {/* Advanced Tactical Grid & Scanlines */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+           {/* Primary Grid */}
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+           {/* Deep Core Glow */}
+           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(16,185,129,0.15)_0%,transparent_70%)]"></div>
+           
+           <motion.div 
+             animate={{ rotate: 360 }} 
+             transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+             className="absolute -top-1/4 -right-1/4 w-[1000px] h-[1000px] border border-white/5 rounded-full"
+           />
+           <motion.div 
+             animate={{ rotate: -360 }} 
+             transition={{ duration: 200, repeat: Infinity, ease: "linear" }}
+             className="absolute -bottom-1/4 -left-1/4 w-[800px] h-[800px] border border-emerald-500/10 rounded-full border-dashed"
+           />
+           
+           {/* Holographic Watermark */}
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[35rem] font-black text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.02)] leading-none select-none tracking-tighter italic z-0 opacity-50">
+              ZERO
+           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-20 mb-20 text-left">
-             <div className="col-span-1 md:col-span-2">
-                <div className="flex items-center gap-4 mb-10">
-                   <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center shadow-4xl rotate-12">
-                      <Zap className="h-7 w-7" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-0 mb-32 relative">
+             
+             {/* Left Column: Brand Core (Spans 5 cols) */}
+             <div className="md:col-span-5 flex flex-col items-start pr-12 lg:border-r border-white/5 relative">
+                {/* Glowing Node Line */}
+                <div className="absolute right-0 top-10 bottom-10 w-px bg-gradient-to-b from-transparent via-emerald-500/30 to-transparent hidden lg:block"></div>
+
+                <Link to="/" className="flex items-center gap-6 mb-10 group/logo relative">
+                   <div className="relative">
+                      <div className="absolute inset-0 bg-emerald-500 rounded-3xl blur-2xl opacity-40 group-hover/logo:opacity-70 transition-opacity duration-700 animate-pulse"></div>
+                      <div className="w-20 h-20 rounded-3xl bg-[#020617] border-2 border-emerald-500/50 text-emerald-400 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.3)] group-hover/logo:border-emerald-400 transition-all duration-500 relative z-10">
+                         <Zap className="h-10 w-10 fill-emerald-500/20" />
+                      </div>
                    </div>
-                   <span className="text-4xl font-black text-white tracking-tighter italic uppercase">ZeroWaste</span>
-                </div>
-                <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-md">
+                   <div className="flex flex-col">
+                      <span className="text-6xl font-black text-white tracking-tighter italic uppercase leading-[0.85] drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">ZeroWaste</span>
+                      <span className="text-xs font-black text-emerald-400 uppercase tracking-[0.5em] mt-3">Network_Core <span className="animate-pulse">_</span></span>
+                   </div>
+                </Link>
+
+                <p className="text-slate-300 text-lg font-bold leading-relaxed max-w-sm mb-12 relative pl-6 border-l-4 border-emerald-500/30 drop-shadow-md">
                    High-integrity urban food rescue network. Utilizing forensic telemetry to bridge the gap between waste and community stability.
                 </p>
+
+                {/* Tactical Status Module */}
+                <div className="w-full max-w-sm p-5 rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-md relative overflow-hidden group shadow-lg">
+                   <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(16,185,129,0.05)_50%,transparent_100%)] group-hover:translate-x-full transition-transform duration-1000"></div>
+                   <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                         <div className="relative flex h-4 w-4">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,1)] border border-emerald-300"></span>
+                         </div>
+                         <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">Global Matrix</span>
+                      </div>
+                      <span className="text-xs font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">Online</span>
+                   </div>
+                </div>
              </div>
              
-             <div>
-                <h4 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10">Operational_Routes</h4>
-                <ul className="space-y-6">
+             {/* Middle Column: Operational Routes (Spans 3 cols) */}
+             <div className="md:col-span-3 lg:px-12 flex flex-col justify-start">
+                <h4 className="flex items-center gap-3 text-white font-black text-sm uppercase tracking-[0.4em] mb-10 opacity-90 drop-shadow-md">
+                   <Activity className="h-5 w-5 text-emerald-500" /> Ops_Routes
+                </h4>
+                <ul className="space-y-8">
                    {[
-                     { name: 'Dashboard', path: '/dashboard' },
-                     { name: 'Mission_Radar', path: '/map' },
-                     { name: 'Post_Mission', path: '/donate' },
-                     { name: 'Profile', path: '/profile' }
-                   ].map(link => (
-                     <li key={link.name}>
-                        <Link to={link.path} className="text-slate-500 hover:text-emerald-400 font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-3 group/link">
-                           <div className="w-1.5 h-1.5 rounded-full bg-white/10 group-hover/link:bg-emerald-500 group-hover/link:animate-pulse transition-all"></div> {link.name}
+                     { name: 'Command Dashboard', path: '/dashboard' },
+                     { name: 'Mission Radar', path: '/map' },
+                     { name: 'Post Rescue Data', path: '/donate' },
+                     { name: 'Operator Profile', path: '/profile' }
+                   ].map((link, i) => (
+                     <motion.li key={link.name} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                        <Link to={link.path} className="text-slate-400 hover:text-white font-black text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group/link">
+                           <div className="w-8 h-[2px] bg-white/20 group-hover/link:w-12 group-hover/link:bg-emerald-500 group-hover/link:shadow-[0_0_15px_rgba(16,185,129,0.8)] transition-all duration-300"></div> 
+                           <span className="group-hover/link:translate-x-1 transition-transform duration-300 drop-shadow-md">{link.name}</span>
                         </Link>
-                     </li>
+                     </motion.li>
                    ))}
                 </ul>
              </div>
 
-             <div>
-                <Link to="/policy" className="block text-white font-black text-[10px] uppercase tracking-[0.5em] mb-10 hover:text-blue-400 transition-colors">System_Vault</Link>
-                <ul className="space-y-6">
-                   {[
-                     { name: 'Safety_Protocol', path: '/safety' },
-                     { name: 'Impact_Metrics', path: '/leaderboard' },
-                     { name: 'Privacy_Log', path: '/policy' },
-                     { name: 'Terms_of_Ops', path: '/policy' }
-                   ].map(link => (
-                     <li key={link.name}>
-                        <Link to={link.path} className="text-slate-500 hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-3 group/link">
-                           <div className="w-1.5 h-1.5 rounded-full bg-white/10 group-hover/link:bg-blue-500 group-hover/link:animate-pulse transition-all"></div> {link.name}
-                        </Link>
-                     </li>
-                   ))}
-                </ul>
+             {/* Right Column: Policies & Comm-Link (Spans 4 cols) */}
+             <div className="md:col-span-4 lg:pl-12 lg:border-l border-white/5 relative flex flex-col justify-between h-full">
+                {/* Glowing Node Line */}
+                <div className="absolute left-0 top-10 bottom-10 w-px bg-gradient-to-b from-transparent via-emerald-500/40 to-transparent hidden lg:block"></div>
+
+                <div className="mb-14">
+                   <h4 className="flex items-center gap-3 text-white font-black text-sm uppercase tracking-[0.4em] mb-10 opacity-90 drop-shadow-md">
+                      <ShieldCheck className="h-5 w-5 text-emerald-500" /> System_Vault
+                   </h4>
+                   <ul className="grid grid-cols-2 gap-y-8 gap-x-6">
+                      {[
+                        { name: 'Safety Protocol', path: '/safety' },
+                        { name: 'Impact Metrics', path: '/leaderboard' },
+                        { name: 'Privacy Log', path: '/policy' },
+                        { name: 'Terms of Ops', path: '/policy' }
+                      ].map(link => (
+                        <li key={link.name}>
+                           <Link to={link.path} className="text-slate-400 hover:text-white font-black text-sm uppercase tracking-widest transition-colors flex items-center gap-3 group/vault">
+                              <span className="text-emerald-500/0 group-hover/vault:text-emerald-500 transition-colors font-mono font-black text-base">&gt;</span> 
+                              <span className="group-hover/vault:translate-x-1 transition-transform duration-300 drop-shadow-md">{link.name}</span>
+                           </Link>
+                        </li>
+                      ))}
+                   </ul>
+                </div>
+                
+                {/* Comm-Link Terminal */}
+                <div className="relative p-8 rounded-3xl bg-[#020617] border-2 border-white/10 shadow-[inset_0_0_40px_rgba(255,255,255,0.03)] overflow-hidden">
+                   {/* Terminal Header */}
+                   <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                      <div className="flex gap-2">
+                         <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+                         <div className="w-3 h-3 rounded-full bg-slate-700"></div>
+                         <div className="w-3 h-3 rounded-full bg-emerald-500/60 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                      </div>
+                      <h5 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest ml-3">Establish_Comm_Link.exe</h5>
+                   </div>
+
+                   <div className="relative group/mail">
+                      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-500 font-mono text-base font-black animate-pulse">&gt;</div>
+                      <input 
+                        type="email" 
+                        placeholder="ENTER_EMAIL_VECTOR..." 
+                        className="w-full bg-transparent border-none pl-10 pr-14 py-4 text-sm font-mono font-bold text-emerald-400 placeholder:text-slate-600 focus:outline-none transition-all"
+                      />
+                      <button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-emerald-500 text-white hover:text-[#020617] rounded-xl flex items-center justify-center transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                         <Zap className="h-5 w-5" />
+                      </button>
+                   </div>
+                </div>
              </div>
           </div>
 
-          <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-            <div className="flex items-center gap-8 px-8 py-4 bg-white/[0.03] border border-white/5 rounded-full backdrop-blur-3xl shadow-4xl">
-               <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em]">&copy; 2026 ZEROWASTE_NETWORK // ALL_NODES_SECURED</p>
+          <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
+            <div className="flex items-center gap-5 px-8 py-4 bg-[#020617] border border-white/10 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.6)]">
+               <ShieldCheck className="h-5 w-5 text-emerald-500" />
+               <p className="text-slate-400 text-xs font-mono font-bold uppercase tracking-[0.2em]">&copy; 2026 ZEROWASTE_NETWORK <span className="text-emerald-500 mx-3 font-black">//</span> ALL_NODES_SECURED</p>
             </div>
             
-            <div className="flex gap-10">
-               {[Globe, Zap, ShieldCheck].map((Icon, i) => (
+            <div className="flex gap-4">
+               {[Globe, Zap, Activity].map((Icon, i) => (
                  <motion.a 
                    key={i} 
                    href="#" 
-                   whileHover={{ y: -5, scale: 1.1 }}
-                   className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-all"
+                   whileHover={{ y: -4, scale: 1.1 }}
+                   className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                  >
                     <Icon className="h-5 w-5" />
                  </motion.a>

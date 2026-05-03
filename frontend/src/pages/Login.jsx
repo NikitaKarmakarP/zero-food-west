@@ -282,6 +282,66 @@ export default function Login() {
         </div>
       </motion.div>
 
+      {/* 4. Application Presets (Under the white box) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        className="w-full max-w-2xl relative z-10 mt-8 flex flex-col items-center"
+      >
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-px bg-gradient-to-r from-transparent to-slate-300 dark:to-slate-700"></div>
+          <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em]">
+            Quick Access Presets
+          </div>
+          <div className="w-12 h-px bg-gradient-to-l from-transparent to-slate-300 dark:to-slate-700"></div>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-4 w-full">
+           <button 
+             type="button"
+             onClick={() => {
+               setEmail('nikitakarmakar831@gmail.com');
+               setPassword('password123');
+             }}
+             className="flex-1 min-w-[200px] px-6 py-4 rounded-3xl bg-white/40 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all backdrop-blur-xl flex items-center gap-4 group shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1"
+           >
+             <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black shadow-inner">
+               NI
+             </div>
+             <div className="text-left">
+               <div className="text-xs font-black text-slate-950 dark:text-white group-hover:text-emerald-500 transition-colors uppercase tracking-widest truncate max-w-[140px]">
+                 NIKITAKARMAKAR831
+               </div>
+               <div className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em]">
+                 Role: Donor
+               </div>
+             </div>
+           </button>
+           
+           <button 
+             type="button"
+             onClick={() => {
+               setEmail('ngo_partner@zerowaste.org');
+               setPassword('password123');
+             }}
+             className="flex-1 min-w-[200px] px-6 py-4 rounded-3xl bg-white/40 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all backdrop-blur-xl flex items-center gap-4 group shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1"
+           >
+             <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black shadow-inner">
+               NG
+             </div>
+             <div className="text-left">
+               <div className="text-xs font-black text-slate-950 dark:text-white group-hover:text-blue-500 transition-colors uppercase tracking-widest truncate max-w-[140px]">
+                 NGO_PARTNER
+               </div>
+               <div className="text-[9px] font-black text-blue-600 dark:text-blue-500 uppercase tracking-[0.3em]">
+                 Role: NGO
+               </div>
+             </div>
+           </button>
+        </div>
+      </motion.div>
+
       {/* Persistent Radar Display */}
       <div className="fixed bottom-12 right-12 flex flex-col gap-8 z-40 opacity-30 hover:opacity-100 transition-opacity duration-1000">
         <div className="relative w-40 h-40 bg-white/10 dark:bg-white/5 backdrop-blur-3xl rounded-full border border-black/5 dark:border-white/10 flex items-center justify-center overflow-hidden">

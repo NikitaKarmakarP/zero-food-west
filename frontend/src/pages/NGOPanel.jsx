@@ -1,6 +1,7 @@
 import { CheckCircle, XCircle, Clock, MapPin, Search, Filter, ShieldCheck, TrendingUp, Users, Package, Navigation, ArrowUpRight, Activity, Zap, Globe, Cpu, Radar, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+import InteractiveMap from '../components/InteractiveMap';
 
 export default function NGOPanel() {
   const { getActiveDonations, acceptDonation, rejectDonation, getAcceptedDonations } = useAppContext();
@@ -141,9 +142,14 @@ export default function NGOPanel() {
                     className="overflow-hidden rounded-[4rem] border border-black/5 dark:border-white/10 shadow-3xl dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] group flex flex-col bg-white dark:bg-white/[0.04] backdrop-blur-3xl hover:bg-slate-50 dark:hover:bg-white/[0.08] transition-all duration-700"
                   >
                     {/* Header: Tactical Map Simulation */}
-                    <div className="h-72 relative bg-slate-100 dark:bg-slate-950 overflow-hidden">
-                      <div className="absolute inset-0 grayscale contrast-125 opacity-30 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=22.5726,88.3639&zoom=15&size=600x400&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x334155&style=feature:landscape|element:geometry|color:0x0f172a&style=feature:water|element:geometry|color:0x1e293b&sensor=false')] bg-cover bg-center transition-transform duration-[4000ms] group-hover:scale-125"></div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#020617] via-transparent to-transparent"></div>
+                    <div className="h-72 relative bg-slate-100 dark:bg-slate-950 overflow-hidden group/map">
+                      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none transition-transform duration-[4000ms] group-hover/map:scale-110">
+                         <InteractiveMap 
+                            center={{ lat: req.lat || 22.5726, lng: req.lng || 88.3639 }}
+                            zoom={15}
+                         />
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#020617] via-transparent to-transparent pointer-events-none"></div>
                       
                       {/* Active Pulse Pin */}
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">

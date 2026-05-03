@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+import InteractiveMap from '../components/InteractiveMap';
 
 const ProgressNode = ({ label, icon: Icon, active = false, completed = false, current = false }) => {
   return (
@@ -300,10 +301,16 @@ export default function PickupTracking() {
                 </div>
                 {/* Right Side: Tactical Navigation Interface */}
                 <div className="lg:w-[48%] h-[600px] lg:h-auto min-h-[850px] relative bg-slate-100 dark:bg-[#01040a] overflow-hidden transition-colors duration-500">
-                  <div className="absolute inset-0 grayscale contrast-125 opacity-20 dark:opacity-30 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=22.5726,88.3639&zoom=15&size=1200x1200&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x334155&style=feature:landscape|element:geometry|color:0x0f172a&style=feature:water|element:geometry|color:0x1e293b&sensor=false')] bg-cover bg-center"></div>
+                  {/* Interactive Map */}
+                  <div className="absolute inset-0 z-0">
+                    <InteractiveMap 
+                      center={{ lat: pickup.lat || 22.5726, lng: pickup.lng || 88.3639 }}
+                      markers={[{ lat: pickup.lat || 22.5726, lng: pickup.lng || 88.3639, type: pickup.type }]}
+                    />
+                  </div>
                   
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#10b98105_0%,transparent_70%)]"></div>
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-10"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#10b98105_0%,transparent_70%)] pointer-events-none z-10"></div>
                   
                   <motion.div 
                     animate={{ top: ['-20%', '120%'] }}
@@ -355,29 +362,48 @@ export default function PickupTracking() {
                      </div>
                   </div>
 
-                  <div className="absolute bottom-10 left-10 right-10 z-40">
-                     <div className="bg-white/90 dark:bg-[#020617]/90 backdrop-blur-3xl p-12 rounded-[4rem] border border-black/5 dark:border-white/10 shadow-4xl overflow-hidden relative">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-700 dark:from-emerald-500 dark:via-teal-400 dark:to-blue-500 shadow-[0_0_20px_rgba(16,185,129,0.5)]"></div>
+                  <div className="absolute bottom-8 left-8 right-8 z-40 group/eta">
+                     <div className="bg-white/80 dark:bg-[#020617]/80 backdrop-blur-[40px] p-10 rounded-[3rem] border border-black/10 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.8)] overflow-hidden relative">
+                        {/* Dynamic Background & Grids */}
+                        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:20px_20px] mix-blend-overlay"></div>
                         
-                        <div className="flex justify-between items-end relative z-10">
-                           <div className="space-y-4">
-                              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em]">LOGISTICS_ETA_PROJECTION</p>
-                              <div className="flex items-baseline gap-4">
-                                 <span className="text-8xl font-black text-slate-950 dark:text-white tracking-tighter leading-none">12</span>
-                                 <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em]">Mins</span>
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 dark:from-emerald-500 dark:via-teal-400 dark:to-blue-500 shadow-[0_0_20px_rgba(16,185,129,0.8)]"></div>
+                        <div className="absolute -top-32 -left-32 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] group-hover/eta:bg-emerald-500/30 transition-colors duration-1000"></div>
+                        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] group-hover/eta:bg-blue-500/20 transition-colors duration-1000"></div>
+                        
+                        <div className="flex flex-col md:flex-row justify-between md:items-end relative z-10 gap-8">
+                           <div className="space-y-6">
+                              <div className="flex items-center gap-4">
+                                 <div className="h-px w-8 bg-emerald-500"></div>
+                                 <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.5em]">LOGISTICS_ETA_PROJECTION</p>
                               </div>
-                              <p className="text-xs font-black text-emerald-600 dark:text-emerald-500 flex items-center gap-3">
-                                 <Satellite className="h-5 w-5 animate-pulse" /> NETWORK_OPTIMIZATION_IN_PROGRESS
-                              </p>
+                              <div className="flex items-baseline gap-4 relative">
+                                 <span className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 tracking-tighter leading-none filter drop-shadow-sm">
+                                   12
+                                 </span>
+                                 <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em] drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">Mins</span>
+                              </div>
+                              <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md shadow-inner">
+                                 <Satellite className="h-4 w-4 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+                                 <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+                                   NETWORK_OPTIMIZATION_IN_PROGRESS
+                                 </p>
+                              </div>
                            </div>
                            
-                           <div className="text-right space-y-6">
-                              <div className="space-y-2">
-                                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em]">TOTAL_REMAINING_RADIUS</p>
-                                 <p className="text-5xl font-black text-slate-950 dark:text-white tracking-tighter">2.4 <span className="text-lg text-slate-400 dark:text-slate-600 ml-2">KM</span></p>
+                           <div className="md:text-right space-y-8 flex flex-col md:items-end">
+                              <div className="space-y-3">
+                                 <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.5em]">TOTAL_REMAINING_RADIUS</p>
+                                 <p className="text-5xl font-black text-slate-950 dark:text-white tracking-tighter filter drop-shadow-sm">
+                                   2.4 <span className="text-sm text-slate-400 dark:text-slate-600 ml-1 uppercase tracking-widest">KM</span>
+                                 </p>
                               </div>
-                              <button className="bg-slate-950 dark:bg-emerald-500 text-white dark:text-slate-950 px-10 py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-emerald-600 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition-all shadow-4xl active:scale-95 group">
-                                 LAUNCH_TACTICAL_MAP <Navigation className="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                              <button className="relative overflow-hidden bg-slate-950 dark:bg-emerald-500 text-white dark:text-slate-950 px-8 py-4 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-4 hover:scale-105 active:scale-95 transition-all shadow-2xl group/btn border border-white/10 dark:border-emerald-400/50">
+                                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-white dark:to-slate-200 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1]"></div>
+                                 <span className="relative z-10 group-hover/btn:text-white dark:group-hover/btn:text-slate-950 transition-colors">
+                                    LAUNCH_TACTICAL_MAP
+                                 </span>
+                                 <Navigation className="h-4 w-4 relative z-10 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform group-hover/btn:text-white dark:group-hover/btn:text-slate-950" />
                                </button>
                             </div>
                          </div>

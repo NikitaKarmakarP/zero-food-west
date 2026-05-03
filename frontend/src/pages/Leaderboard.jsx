@@ -1,6 +1,7 @@
 import { Trophy, Award, TrendingUp, Users, Star, Medal, ArrowUpRight, Search, Filter, Globe, Zap, Activity, Heart, ShieldCheck, Target, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const topRescuers = [
   { id: 1, name: 'Rahul S.', points: 12400, rescues: 45, impact: '1.2k People', rank: 1, avatar: '45', color: 'amber' },
@@ -18,6 +19,7 @@ const allParticipants = [
 
 export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState('weekly');
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#020617] pb-24 selection:bg-emerald-500/30 font-sans text-slate-950 dark:text-white transition-colors duration-500">
@@ -78,10 +80,11 @@ export default function Leaderboard() {
            {topRescuers.map((user, i) => (
              <motion.div 
                key={user.id}
+               onClick={() => navigate('/profile')}
                initial={{ opacity: 0, y: 50 }}
                whileInView={{ opacity: 1, y: 0 }}
                transition={{ delay: i * 0.1 }}
-               className={`p-12 rounded-[4rem] bg-white/70 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 backdrop-blur-3xl shadow-4xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-700 ${i === 0 ? 'md:order-2 md:-translate-y-16 scale-110 shadow-amber-500/10 border-amber-500/20' : i === 1 ? 'md:order-1' : 'md:order-3'}`}
+               className={`p-12 rounded-[4rem] bg-white/70 dark:bg-white/[0.03] border border-black/5 dark:border-white/5 backdrop-blur-3xl shadow-4xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-700 cursor-pointer ${i === 0 ? 'md:order-2 md:-translate-y-16 scale-110 shadow-amber-500/10 border-amber-500/20' : i === 1 ? 'md:order-1' : 'md:order-3'}`}
              >
                 <div className={`absolute top-0 right-0 w-48 h-48 bg-${user.color}-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000`}></div>
                 
@@ -154,6 +157,7 @@ export default function Leaderboard() {
                     {allParticipants.map((p, i) => (
                        <motion.div 
                          key={p.id}
+                         onClick={() => navigate('/profile')}
                          initial={{ opacity: 0, y: 10 }}
                          whileInView={{ opacity: 1, y: 0 }}
                          transition={{ delay: i * 0.05 }}

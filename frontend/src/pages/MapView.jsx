@@ -2,6 +2,7 @@ import { MapPin, Navigation, Clock, Search, Filter, Utensils, Zap, Target, Layer
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+import InteractiveMap from '../components/InteractiveMap';
 
 export default function MapView() {
   const { getActiveDonations, acceptDonation } = useAppContext();
@@ -128,8 +129,14 @@ export default function MapView() {
 
       {/* Main Map Visualization */}
       <main className="flex-1 relative bg-slate-100 dark:bg-slate-900 group transition-colors duration-500">
-        {/* Mock Map Background */}
-        <div className="absolute inset-0 grayscale contrast-75 dark:contrast-125 opacity-20 dark:opacity-30 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=22.5726,88.3639&zoom=14&size=1200x800&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x334155&style=feature:landscape|element:geometry|color:0x0f172a&style=feature:water|element:geometry|color:0x1e293b&sensor=false')] bg-cover bg-center transition-transform duration-[10000ms] group-hover:scale-110"></div>
+        {/* Interactive Google Map */}
+        <div className="absolute inset-0 z-0">
+          <InteractiveMap 
+            center={selectedDonation ? { lat: selectedDonation.lat, lng: selectedDonation.lng } : { lat: 22.5726, lng: 88.3639 }}
+            markers={filteredDonations}
+            onMarkerClick={(marker) => setSelectedDonation(marker)}
+          />
+        </div>
         
         {/* Radar Scanning Line */}
         <div className="absolute top-0 left-0 w-full h-px bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.5)] z-10 animate-scan"></div>
@@ -193,26 +200,6 @@ export default function MapView() {
            </AnimatePresence>
         </div>
 
-        {/* Map Markers Overlay */}
-        <div className="absolute inset-0 pointer-events-none">
-           {filteredDonations.map((node, idx) => (
-             <motion.div 
-               key={node.id}
-               initial={{ scale: 0 }}
-               animate={{ scale: 1 }}
-               className="absolute cursor-pointer pointer-events-auto"
-               style={{ top: `${(idx * 15) + 20}%`, left: `${(idx * 20) + 25}%` }}
-               onClick={() => setSelectedDonation(node)}
-             >
-                <div className="relative group">
-                   <div className={`absolute -inset-8 rounded-full animate-ping opacity-20 ${node.type === 'veg' ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
-                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white dark:text-slate-950 shadow-6xl border-[4px] border-white dark:border-slate-950 group-hover:scale-125 transition-transform ${node.type === 'veg' ? 'bg-emerald-600 dark:bg-emerald-500' : 'bg-rose-600 dark:bg-rose-500'}`}>
-                      <MapPin className="h-7 w-7" />
-                   </div>
-                </div>
-             </motion.div>
-           ))}
-        </div>
       </main>
     </div>
   );
