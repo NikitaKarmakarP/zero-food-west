@@ -409,9 +409,9 @@ export default function SmartRecipe() {
                          />
                       </div>
                       <div className="text-emerald-600/70 dark:text-emerald-500/50 text-[10px] font-mono uppercase tracking-widest flex flex-col gap-1">
-                         <span>> Analyzing flavor profiles...</span>
-                         <span>> Cross-referencing {selectedIngredients.length} variables...</span>
-                         <span>> Optimizing for zero waste...</span>
+                         <span>&gt; Analyzing flavor profiles...</span>
+                         <span>&gt; Cross-referencing {selectedIngredients.length} variables...</span>
+                         <span>&gt; Optimizing for zero waste...</span>
                       </div>
                    </div>
                 </div>
