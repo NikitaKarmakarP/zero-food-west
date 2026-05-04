@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChefHat, Sparkles, Plus, X, Search, Clock, Flame, Leaf, Utensils, 
-  CheckCircle2, Camera, FileText, BookmarkPlus, Heart, Users, PlayCircle
+  CheckCircle2, Camera, FileText, BookmarkPlus, Heart, Users, PlayCircle,
+  ShieldCheck, Zap, Info
 } from 'lucide-react';
 
 const commonIngredients = [
@@ -16,7 +17,13 @@ const commonIngredients = [
   { id: 'pasta', name: 'Cooked Pasta', category: 'grains', icon: '🍝' },
 ];
 
-const dietaryOptions = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Nut-Free', 'Dairy-Free'];
+const dietaryOptions = [
+  { name: 'Vegetarian', icon: <Leaf className="h-4 w-4 text-emerald-500" /> },
+  { name: 'Vegan', icon: <Sparkles className="h-4 w-4 text-emerald-400" /> },
+  { name: 'Gluten-Free', icon: <ShieldCheck className="h-4 w-4 text-amber-500" /> },
+  { name: 'Nut-Free', icon: <Zap className="h-4 w-4 text-blue-500" /> },
+  { name: 'Dairy-Free', icon: <Info className="h-4 w-4 text-purple-500" /> }
+];
 
 const mockRecipes = [
   {
@@ -79,11 +86,11 @@ export default function SmartRecipe() {
     }
   };
 
-  const toggleDiet = (diet) => {
-    if (selectedDiets.includes(diet)) {
-      setSelectedDiets(selectedDiets.filter(d => d !== diet));
+  const toggleDiet = (dietName) => {
+    if (selectedDiets.includes(dietName)) {
+      setSelectedDiets(selectedDiets.filter(d => d !== dietName));
     } else {
-      setSelectedDiets([...selectedDiets, diet]);
+      setSelectedDiets([...selectedDiets, dietName]);
     }
   };
 
@@ -215,18 +222,29 @@ export default function SmartRecipe() {
                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Dietary Preferences</h3>
                  <div className="flex flex-wrap gap-3">
                     {dietaryOptions.map(diet => {
-                       const isSelected = selectedDiets.includes(diet);
+                       const isSelected = selectedDiets.includes(diet.name);
                        return (
                           <button 
-                            key={diet}
-                            onClick={() => toggleDiet(diet)}
-                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border \${
+                            key={diet.name}
+                            onClick={() => toggleDiet(diet.name)}
+                            className={`group relative flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-black transition-all border shadow-sm ${
                                isSelected 
-                               ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-transparent shadow-md' 
-                               : 'bg-white/50 dark:bg-black/20 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-blue-400 dark:hover:border-blue-500/50'
+                               ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 border-transparent shadow-[0_10px_20px_rgba(0,0,0,0.1)] scale-[1.02]' 
+                               : 'bg-white/50 dark:bg-white/[0.05] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-emerald-400/50 dark:hover:border-emerald-500/30'
                             }`}
                           >
-                             {diet}
+                             <div className={`p-1.5 rounded-lg transition-colors ${isSelected ? 'bg-emerald-500/20' : 'bg-slate-100 dark:bg-white/5'}`}>
+                                {diet.icon}
+                             </div>
+                             <span className="uppercase tracking-widest">{diet.name}</span>
+                             {isSelected && (
+                                <motion.div 
+                                   layoutId="diet-check"
+                                   className="absolute -top-2 -right-2 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center border-2 border-white dark:border-[#020617] shadow-lg"
+                                >
+                                   <CheckCircle2 className="h-3 w-3" />
+                                </motion.div>
+                             )}
                           </button>
                        );
                     })}
@@ -290,10 +308,10 @@ export default function SmartRecipe() {
                           <button 
                             key={ing.id}
                             onClick={() => toggleIngredient(ing)}
-                            className={`px-4 py-3 rounded-2xl border text-left flex items-center justify-between transition-all text-sm font-bold \${
+                            className={`px-4 py-3 rounded-2xl border text-left flex items-center justify-between transition-all text-sm font-bold ${
                                isSelected 
                                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-md' 
-                               : 'bg-white/50 dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-400 dark:hover:border-emerald-500/50'
+                               : 'bg-white/50 dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-400/50 dark:hover:border-emerald-500/30'
                             }`}
                           >
                              <span className="truncate flex items-center gap-2"><span className="text-lg">{ing.icon}</span> {ing.name}</span>
@@ -310,7 +328,7 @@ export default function SmartRecipe() {
                 transition={{ delay: 0.3 }}
                 onClick={generateRecipes}
                 disabled={selectedIngredients.length === 0 || isGenerating}
-                className={`w-full py-5 rounded-2xl font-black text-white uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-3 shadow-xl \${
+                className={`w-full py-5 rounded-2xl font-black text-white uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-3 shadow-xl ${
                    selectedIngredients.length === 0 
                    ? 'bg-slate-300 dark:bg-slate-800 cursor-not-allowed text-slate-400 dark:text-slate-500 shadow-none' 
                    : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-400 hover:to-blue-400 hover:shadow-emerald-500/25 hover:-translate-y-1'
@@ -360,7 +378,7 @@ export default function SmartRecipe() {
                             <button 
                               key={filter}
                               onClick={() => setActiveFilter(filter)}
-                              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all \${
+                              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                                 activeFilter === filter 
                                 ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' 
                                 : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
@@ -398,13 +416,13 @@ export default function SmartRecipe() {
                                 <div className="absolute top-6 right-6">
                                    <button 
                                      onClick={() => toggleSave(recipe.id)}
-                                     className={`p-3 rounded-2xl backdrop-blur-xl shadow-lg transition-all \${
+                                     className={`p-3 rounded-2xl backdrop-blur-xl shadow-lg transition-all ${
                                        savedRecipes.includes(recipe.id) 
                                        ? 'bg-emerald-500 text-white' 
                                        : 'bg-white/90 dark:bg-slate-900/90 text-slate-400 hover:text-emerald-500 hover:scale-110'
                                      }`}
                                    >
-                                      <BookmarkPlus className={`h-6 w-6 \${savedRecipes.includes(recipe.id) ? 'fill-current' : ''}`} />
+                                      <BookmarkPlus className={`h-6 w-6 ${savedRecipes.includes(recipe.id) ? 'fill-current' : ''}`} />
                                    </button>
                                 </div>
                              </div>
@@ -436,7 +454,7 @@ export default function SmartRecipe() {
                                      { label: 'Cals', val: recipe.macros.cal, color: 'rose' }
                                    ].map((m, i) => (
                                      <div key={i} className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white/60 dark:bg-black/20 border border-slate-200/50 dark:border-white/5 backdrop-blur-sm shadow-sm">
-                                        <span className={`text-xl font-black text-\${m.color}-600 dark:text-\${m.color}-400 mb-1`}>{m.val}</span>
+                                        <span className={`text-xl font-black text-${m.color}-600 dark:text-${m.color}-400 mb-1`}>{m.val}</span>
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{m.label}</span>
                                      </div>
                                    ))}

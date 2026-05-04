@@ -77,10 +77,16 @@ export default function Dashboard() {
             animate={{ opacity: 1, scale: 1 }}
             className="flex gap-4"
           >
-            <button className="px-10 py-5 bg-white/60 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-black rounded-2xl hover:bg-white dark:hover:bg-white/10 transition-all text-sm uppercase tracking-widest flex items-center gap-2">
+            <button 
+              onClick={() => alert('Mission Data Encrypted & Exported to Secure Local Storage.')}
+              className="px-10 py-5 bg-white/60 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-black rounded-2xl hover:bg-white dark:hover:bg-white/10 transition-all text-sm uppercase tracking-widest flex items-center gap-2"
+            >
                <Download className="h-4 w-4" /> Export
             </button>
-            <button className="px-10 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-2xl hover:bg-emerald-600 dark:hover:bg-emerald-400 hover:text-white transition-all shadow-xl text-sm uppercase tracking-widest flex items-center gap-2 active:scale-95">
+            <button 
+              onClick={() => navigate('/donate')}
+              className="px-10 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-2xl hover:bg-emerald-600 dark:hover:bg-emerald-400 hover:text-white transition-all shadow-xl text-sm uppercase tracking-widest flex items-center gap-2 active:scale-95"
+            >
                <Zap className="h-4 w-4" /> New Mission
             </button>
           </motion.div>

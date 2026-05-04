@@ -16,6 +16,7 @@ import PickupTracking from './pages/PickupTracking'
 import PolicyManual from './pages/PolicyManual'
 import Leaderboard from './pages/Leaderboard'
 import SmartRecipe from './pages/SmartRecipe'
+import SettingsPage from './pages/Settings'
 import { useAppContext } from './context/AppContext'
 
 function Navbar() {
@@ -46,10 +47,10 @@ function Navbar() {
     { name: t('safety'), path: '/safety' },
   ]
   
-  if (user) {
-    navItems.push({ name: t('track'), path: '/track' })
-    navItems.push({ name: t('dashboard'), path: '/dashboard' })
-  }
+   if (user) {
+     navItems.push({ name: t('track'), path: '/track' })
+     navItems.push({ name: t('dashboard'), path: '/dashboard' })
+   }
   
   if (user?.role === 'ngo') {
     navItems.push({ name: t('ngoPanel'), path: '/ngo' })
@@ -239,70 +240,106 @@ function Navbar() {
                             />
                             
                             <motion.div 
-                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                              className="absolute right-0 mt-4 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl z-[110] overflow-hidden"
+                              initial={{ opacity: 0, y: 15, scale: 0.98, filter: 'blur(10px)' }}
+                              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95, filter: 'blur(5px)' }}
+                              transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
+                              className="absolute right-0 mt-6 w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-2 border-white dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[2.5rem] z-[110] overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
                             >
-                              {/* Dropdown Header */}
-                              <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                                <div className="flex items-center gap-4 mb-4">
-                                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-lg shadow-inner">
-                                    {user.name?.substring(0, 1).toUpperCase()}
+                              {/* Dropdown Header - Tactical Profile Summary */}
+                              <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                                <div className="flex items-center gap-5 mb-8">
+                                  <div className="relative group/avatar">
+                                    <div className="absolute -inset-1.5 bg-gradient-to-tr from-emerald-500 to-blue-500 rounded-2xl blur opacity-30 group-hover/avatar:opacity-50 transition-opacity"></div>
+                                    <div className="relative w-14 h-14 rounded-2xl bg-slate-900 dark:bg-black border border-white/20 flex items-center justify-center text-white font-black text-xl shadow-inner overflow-hidden">
+                                      <img 
+                                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=020617`} 
+                                        alt="Avatar" 
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
                                   </div>
                                   <div className="flex flex-col">
-                                    <span className="font-bold text-slate-900 dark:text-white">{user.name}</span>
-                                    <span className="text-xs text-slate-500 dark:text-slate-400 truncate w-32">{user.email}</span>
+                                    <span className="font-black text-lg text-slate-900 dark:text-white tracking-tight leading-none mb-1">{user.name}</span>
+                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate w-40">{user.email}</span>
                                   </div>
                                 </div>
                                 
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
-                                   <div className="flex items-center gap-2">
-                                      <Zap className="h-4 w-4 text-emerald-500 fill-emerald-500" />
-                                      <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Impact Points</span>
+                                {/* Impact Points - High Visibility Module */}
+                                <div className="relative group/impact cursor-default">
+                                   <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-sm opacity-20 group-hover/impact:opacity-40 transition-opacity"></div>
+                                   <div className="relative flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-500/20 shadow-sm">
+                                      <div className="flex items-center gap-3">
+                                         <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                                            <Zap className="h-5 w-5 fill-emerald-500" />
+                                         </div>
+                                         <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Impact_Points</span>
+                                      </div>
+                                      <span className="text-xl font-black text-slate-900 dark:text-white tabular-nums italic">{user.points || 0}</span>
                                    </div>
-                                   <span className="text-sm font-bold text-slate-900 dark:text-white">{user.points || 0}</span>
                                 </div>
                               </div>
 
-                              {/* Dropdown Menu */}
-                              <div className="p-2">
+                              {/* Dropdown Menu - Functional Nodes */}
+                              <div className="p-3 space-y-1">
                                 <Link 
                                   to="/profile" 
                                   onClick={() => setShowProfileDropdown(false)}
-                                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
+                                  className="flex items-center justify-between group/link px-5 py-4 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all font-bold text-sm"
                                 >
-                                  <User className="h-4 w-4" />
-                                  My Profile
+                                  <div className="flex items-center gap-4">
+                                    <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 group-hover/link:bg-emerald-500/20 transition-colors text-slate-400 group-hover/link:text-emerald-500">
+                                      <User className="h-4 w-4" />
+                                    </div>
+                                    <span className="uppercase tracking-widest text-[11px]">My Profile</span>
+                                  </div>
+                                  <ChevronRight className="h-3 w-3 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all" />
                                 </Link>
                                 
                                 <Link 
                                   to="/dashboard" 
                                   onClick={() => setShowProfileDropdown(false)}
-                                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
+                                  className="flex items-center justify-between group/link px-5 py-4 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all font-bold text-sm"
                                 >
-                                  <LayoutDashboard className="h-4 w-4" />
-                                  Dashboard
+                                  <div className="flex items-center gap-4">
+                                    <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 group-hover/link:bg-blue-500/20 transition-colors text-slate-400 group-hover/link:text-blue-500">
+                                      <LayoutDashboard className="h-4 w-4" />
+                                    </div>
+                                    <span className="uppercase tracking-widest text-[11px]">Dashboard</span>
+                                  </div>
+                                  <ChevronRight className="h-3 w-3 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all" />
                                 </Link>
 
-                                <button 
-                                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all font-medium text-sm"
+                                <Link 
+                                  to="/settings"
+                                  onClick={() => setShowProfileDropdown(false)}
+                                  className="flex items-center justify-between group/link px-5 py-4 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all font-bold text-sm"
                                 >
-                                  <Settings className="h-4 w-4" />
-                                  Settings
-                                </button>
+                                  <div className="flex items-center gap-4">
+                                    <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 group-hover/link:bg-slate-200 dark:group-hover/link:bg-white/20 transition-colors text-slate-400 group-hover/link:text-slate-900 dark:group-hover/link:text-white">
+                                      <Settings className="h-4 w-4" />
+                                    </div>
+                                    <span className="uppercase tracking-widest text-[11px]">Settings</span>
+                                  </div>
+                                  <ChevronRight className="h-3 w-3 opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all" />
+                                </Link>
                                 
-                                <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
+                                <div className="h-px bg-slate-100 dark:bg-white/5 my-3 mx-4" />
                                 
                                 <button 
                                   onClick={() => {
                                     setShowProfileDropdown(false);
                                     logout();
                                   }}
-                                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all font-medium text-sm"
+                                  className="w-full flex items-center justify-between group/logout px-5 py-4 rounded-2xl text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all font-bold text-sm"
                                 >
-                                  <LogOut className="h-4 w-4" />
-                                  Sign Out
+                                  <div className="flex items-center gap-4">
+                                    <div className="p-2 rounded-xl bg-rose-100 dark:bg-rose-500/10 group-hover/logout:bg-rose-500 group-hover/logout:text-white transition-all text-rose-500">
+                                      <LogOut className="h-4 w-4" />
+                                    </div>
+                                    <span className="uppercase tracking-widest text-[11px]">Sign Out</span>
+                                  </div>
+                                  <div className="text-[10px] font-black uppercase tracking-widest opacity-30 group-hover/logout:opacity-100 transition-opacity">Exit</div>
                                 </button>
                               </div>
                             </motion.div>
@@ -1368,8 +1405,9 @@ function Home() {
                  ].map((hub, i) => (
                    <motion.div 
                      key={i}
+                     onClick={() => navigate('/map')}
                      whileHover={{ scale: 1.05, y: -10 }}
-                     className="p-12 rounded-[4rem] bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 backdrop-blur-3xl shadow-4xl group"
+                     className="p-12 rounded-[4rem] bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 backdrop-blur-3xl shadow-4xl group cursor-pointer"
                    >
                       <div className={`w-4 h-4 rounded-full bg-${hub.color === 'amber' ? 'orange' : hub.color}-500 mb-8 shadow-[0_0_20px_rgba(59,130,246,0.4)] animate-pulse`}></div>
                       <h4 className="text-2xl font-black text-white mb-2 tracking-tighter uppercase italic">{hub.city}</h4>
@@ -1666,10 +1704,10 @@ function Home() {
                         <div className="absolute inset-0 bg-emerald-600 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500"></div>
                      </button>
                      <button 
-                       onClick={() => navigate('/policy')}
+                       onClick={() => navigate('/safety')}
                        className="bg-white border-4 border-slate-950 text-slate-950 font-black px-12 py-6 rounded-[2.5rem] text-[10px] uppercase tracking-[0.4em] hover:bg-slate-50 transition-all active:scale-95 italic"
                      >
-                        REVIEW_PROTOCOLS
+                        EXPLORE_PROTOCOLS
                      </button>
                   </div>
                </div>
@@ -1894,7 +1932,10 @@ function App() {
                         placeholder="ENTER_EMAIL_VECTOR..." 
                         className="w-full bg-transparent border-none pl-10 pr-14 py-4 text-sm font-mono font-bold text-emerald-400 placeholder:text-slate-600 focus:outline-none transition-all"
                       />
-                      <button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-emerald-500 text-white hover:text-[#020617] rounded-xl flex items-center justify-center transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                      <button 
+                        onClick={() => alert('Comm-Link Established. Secure Vector Active.')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-emerald-500 text-white hover:text-[#020617] rounded-xl flex items-center justify-center transition-all shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                      >
                          <Zap className="h-5 w-5" />
                       </button>
                    </div>
@@ -1909,17 +1950,21 @@ function App() {
             </div>
             
             <div className="flex gap-4">
-               {[Globe, Zap, Activity].map((Icon, i) => (
-                 <motion.a 
-                   key={i} 
-                   href="#" 
-                   whileHover={{ y: -4, scale: 1.1 }}
-                   className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                 >
-                    <Icon className="h-5 w-5" />
-                 </motion.a>
-               ))}
-            </div>
+                {[
+                  { icon: Globe, action: () => window.open('https://google.com', '_blank') },
+                  { icon: Zap, action: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+                  { icon: Activity, action: () => navigate('/dashboard') }
+                ].map((item, i) => (
+                  <motion.button 
+                    key={i} 
+                    onClick={item.action}
+                    whileHover={{ y: -4, scale: 1.1 }}
+                    className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                  >
+                     <item.icon className="h-5 w-5" />
+                  </motion.button>
+                ))}
+             </div>
           </div>
         </div>
       </footer>

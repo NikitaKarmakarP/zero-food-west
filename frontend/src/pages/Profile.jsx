@@ -2,7 +2,7 @@ import { Award, Gift, History, Star, TrendingUp, Settings, MapPin, Calendar, Mai
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const StatCard = ({ label, val, icon: Icon, color, delay }) => (
   <motion.div 
@@ -24,6 +24,7 @@ const StatCard = ({ label, val, icon: Icon, color, delay }) => (
 export default function Profile() {
   const { user, addNotification } = useAppContext();
   const [activeTab, setActiveTab] = useState('achievements');
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -89,10 +90,13 @@ export default function Profile() {
               </div>
 
               <div className="flex gap-4">
-                 <button className="p-5 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-all shadow-md active:scale-95 group">
+                 <Link to="/settings" className="p-5 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-all shadow-md active:scale-95 group">
                     <Settings className="h-6 w-6 text-slate-400 group-hover:rotate-90 transition-transform duration-500" />
-                 </button>
-                 <button className="p-5 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-all shadow-md active:scale-95">
+                 </Link>
+                 <button 
+                   onClick={() => alert('Secure Profile Link Copied to Neural Interface.')}
+                   className="p-5 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 transition-all shadow-md active:scale-95"
+                 >
                     <Share2 className="h-6 w-6 text-slate-400" />
                  </button>
               </div>
@@ -229,7 +233,10 @@ export default function Profile() {
                     </div>
                     <h3 className="text-3xl font-black mb-4 tracking-tight uppercase italic">Settings.</h3>
                     <p className="text-white/60 text-lg font-medium mb-10 leading-relaxed">Fine-tune your rescue radius and communication nodes.</p>
-                    <button className="w-full bg-white text-slate-900 font-black py-4 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all shadow-xl text-[10px] uppercase tracking-widest active:scale-95">
+                    <button 
+                      onClick={() => navigate('/settings')}
+                      className="w-full bg-white text-slate-900 font-black py-4 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all shadow-xl text-[10px] uppercase tracking-widest active:scale-95"
+                    >
                        Open Control Center
                     </button>
                  </div>

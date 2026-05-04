@@ -502,5 +502,6 @@ export default function EventDonations() {
            </div>
         </div>
       </div>
-    );
+    </div>
+  );
 }

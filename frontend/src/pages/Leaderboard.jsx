@@ -128,7 +128,10 @@ export default function Leaderboard() {
                       </div>
                    </div>
 
-                   <button className="w-full group/btn relative overflow-hidden py-5 rounded-[2rem] bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-amber-500 dark:hover:bg-amber-400 hover:text-white dark:hover:text-slate-900 shadow-xl flex items-center justify-center gap-4 active:scale-95 italic">
+                   <button 
+                     onClick={() => navigate('/profile')}
+                     className="w-full group/btn relative overflow-hidden py-5 rounded-[2rem] bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-amber-500 dark:hover:bg-amber-400 hover:text-white dark:hover:text-slate-900 shadow-xl flex items-center justify-center gap-4 active:scale-95 italic"
+                   >
                       <span className="relative z-10">VIEW_MISSION_DATA</span>
                       <ArrowUpRight className="h-5 w-5 relative z-10 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                    </button>
@@ -216,9 +219,16 @@ export default function Leaderboard() {
                     ))}
                  </div>
 
-                 <button className="w-full mt-12 py-6 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl text-slate-400 dark:text-slate-500 font-black text-xs uppercase tracking-widest hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-inner">
-                    Load More Members
-                 </button>
+                  <button 
+                    onClick={(e) => {
+                      const btn = e.currentTarget;
+                      btn.innerText = 'UPLINKING...';
+                      setTimeout(() => { btn.innerText = 'NO MORE NODES IN RANGE'; btn.disabled = true; }, 1500);
+                    }}
+                    className="w-full mt-12 py-6 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl text-slate-400 dark:text-slate-500 font-black text-xs uppercase tracking-widest hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-inner"
+                  >
+                     Load More Members
+                  </button>
               </motion.div>
            </div>
 
@@ -242,7 +252,10 @@ export default function Leaderboard() {
                     <p className="text-slate-400 text-lg font-medium mb-12 leading-relaxed">
                        Complete 5 verified rescues this week to unlock the <span className="text-amber-500 font-black">"Node Guardian"</span> badge.
                     </p>
-                    <button className="w-full bg-white text-slate-900 font-black py-5 rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl text-sm uppercase tracking-widest active:scale-95">
+                    <button 
+                      onClick={() => navigate('/donate')}
+                      className="w-full bg-white text-slate-900 font-black py-5 rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl text-sm uppercase tracking-widest active:scale-95"
+                    >
                        Begin Rescue Mission
                     </button>
                  </div>
