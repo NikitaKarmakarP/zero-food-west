@@ -28,6 +28,7 @@ export default function MapView() {
   });
 
   return (
+    <>
     <div className="h-screen bg-slate-50 dark:bg-[#020617] relative flex overflow-hidden font-sans text-slate-950 dark:text-white transition-colors duration-500">
       
       {/* Immersive HUD Overlay for Map (Corner Brackets) */}
@@ -296,5 +297,6 @@ export default function MapView() {
 
       </main>
     </div>
+    </>
   );
 }
