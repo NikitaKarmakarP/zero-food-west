@@ -12,8 +12,8 @@ const StatCard = ({ label, val, icon: Icon, color, delay }) => (
     whileHover={{ y: -5 }}
     className="p-8 rounded-[3rem] bg-white/80 dark:bg-white/[0.03] backdrop-blur-xl border border-white dark:border-white/10 shadow-xl dark:shadow-none relative overflow-hidden group"
   >
-    <div className={`absolute top-0 right-0 w-32 h-32 bg-\${color}-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2`}></div>
-    <div className={`w-14 h-14 rounded-2xl bg-\${color}-500/10 text-\${color}-600 dark:text-\${color}-400 flex items-center justify-center mb-8 shadow-inner group-hover:scale-110 transition-transform`}>
+    <div className={`absolute top-0 right-0 w-32 h-32 bg-${color}-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2`}></div>
+    <div className={`w-14 h-14 rounded-2xl bg-${color}-500/10 text-${color}-600 dark:text-${color}-400 flex items-center justify-center mb-8 shadow-inner group-hover:scale-110 transition-transform`}>
        <Icon className="h-7 w-7" />
     </div>
     <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter tabular-nums mb-1">{val}</div>
@@ -54,7 +54,7 @@ export default function Profile() {
                  <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500 to-blue-500 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                  <div className="w-48 h-48 md:w-64 md:h-64 rounded-[3rem] border-[12px] border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-900 overflow-hidden shadow-2xl relative z-10">
                     <img 
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=\${user.name}&backgroundColor=020617`} 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}&backgroundColor=020617`} 
                       alt="Profile" 
                       className="w-full h-full object-cover"
                     />
@@ -135,7 +135,7 @@ export default function Profile() {
                     ].map((badge, i) => (
                        <div key={i} className="p-8 rounded-[3rem] bg-slate-50/50 dark:bg-black/20 border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-white/5 transition-all group cursor-pointer shadow-inner">
                           <div className="flex items-center gap-6">
-                             <div className={`w-20 h-20 rounded-[2rem] bg-\${badge.color}-500/10 text-\${badge.color}-600 dark:text-\${badge.color}-400 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
+                             <div className={`w-20 h-20 rounded-[2rem] bg-${badge.color}-500/10 text-${badge.color}-600 dark:text-${badge.color}-400 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
                                 <badge.icon className="h-9 w-9" />
                              </div>
                              <div>
@@ -163,7 +163,7 @@ export default function Profile() {
                        <motion.div 
                          key={i}
                          initial={{ height: 0 }}
-                         animate={{ height: `\${h}%` }}
+                         animate={{ height: `${h}%` }}
                          transition={{ delay: i * 0.1, duration: 1 }}
                          className="flex-1 bg-gradient-to-t from-emerald-600 to-teal-400 rounded-2xl relative group/bar"
                        >
@@ -204,7 +204,7 @@ export default function Profile() {
                                 <h4 className="font-bold text-slate-900 dark:text-white text-base tracking-tight group-hover:text-emerald-600 transition-colors">{log.title}</h4>
                                 <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{log.time}</div>
                              </div>
-                             <div className={`text-xs font-black text-\${log.color}-500 tabular-nums`}>{log.val}</div>
+                             <div className={`text-xs font-black text-${log.color}-500 tabular-nums`}>{log.val}</div>
                           </div>
                           <div className="h-px bg-slate-50 dark:bg-white/5"></div>
                        </div>

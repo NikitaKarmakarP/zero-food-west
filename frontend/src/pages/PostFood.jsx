@@ -34,7 +34,7 @@ export default function PostFood() {
 
   useEffect(() => {
     // Generate a tactical protocol ID
-    setProtocolId(`RW-\${Math.random().toString(36).substr(2, 6).toUpperCase()}-2026`);
+    setProtocolId(`RW-${Math.random().toString(36).substr(2, 6).toUpperCase()}-2026`);
   }, []);
 
   useEffect(() => {
@@ -180,7 +180,7 @@ export default function PostFood() {
                    <button 
                      key={tab}
                      onClick={() => setActiveTab(tab)}
-                     className={`flex-1 py-8 text-[10px] font-black uppercase tracking-[0.5em] transition-all relative \${
+                     className={`flex-1 py-8 text-[10px] font-black uppercase tracking-[0.5em] transition-all relative ${
                        activeTab === tab ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'
                      }`}
                    >
@@ -239,7 +239,7 @@ export default function PostFood() {
                                key={type.id}
                                type="button"
                                onClick={() => setFormData({...formData, type: type.id})}
-                               className={`py-6 rounded-[2rem] font-black uppercase text-[10px] tracking-[0.3em] transition-all flex items-center justify-center gap-4 italic \${
+                               className={`py-6 rounded-[2rem] font-black uppercase text-[10px] tracking-[0.3em] transition-all flex items-center justify-center gap-4 italic ${
                                  formData.type === type.id ? 'bg-white text-slate-950 shadow-xl scale-[1.02] border border-slate-100' : 'text-slate-400 hover:bg-white/50'
                                }`}
                              >
@@ -301,7 +301,7 @@ export default function PostFood() {
                         <button 
                           type="submit" 
                           disabled={isSubmitting || readiness < 100}
-                          className={`flex-1 w-full font-black py-7 rounded-[2rem] transition-all shadow-xl text-[10px] uppercase tracking-[0.5em] flex items-center justify-center gap-6 group italic overflow-hidden relative \${
+                          className={`flex-1 w-full font-black py-7 rounded-[2rem] transition-all shadow-xl text-[10px] uppercase tracking-[0.5em] flex items-center justify-center gap-6 group italic overflow-hidden relative ${
                             readiness === 100 
                             ? 'bg-slate-950 text-white hover:bg-emerald-600' 
                             : 'bg-slate-100 text-slate-300 cursor-not-allowed border border-slate-200'
@@ -309,7 +309,7 @@ export default function PostFood() {
                         >
                           <div className="relative z-10 flex items-center gap-6">
                             {isSubmitting ? 'INITIALIZING_RESCUE...' : 'ACTIVATE_PROTOCOL'} 
-                            <Send className={`h-5 w-5 \${readiness === 100 ? 'group-hover:translate-x-2 group-hover:-translate-y-2' : ''} transition-transform`} />
+                            <Send className={`h-5 w-5 ${readiness === 100 ? 'group-hover:translate-x-2 group-hover:-translate-y-2' : ''} transition-transform`} />
                           </div>
                           {readiness === 100 && (
                             <motion.div 
@@ -322,7 +322,7 @@ export default function PostFood() {
                         
                         <div className="flex-1 text-center md:text-left">
                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Mission_Status</div>
-                           <div className={`text-xs font-bold uppercase tracking-widest \${readiness === 100 ? 'text-emerald-600' : 'text-slate-300'}`}>
+                           <div className={`text-xs font-bold uppercase tracking-widest ${readiness === 100 ? 'text-emerald-600' : 'text-slate-300'}`}>
                               {readiness === 100 ? 'READY_FOR_UPLINK' : 'AWAITING_PARAMETERS'}
                            </div>
                         </div>
@@ -371,7 +371,7 @@ export default function PostFood() {
             >
                <div className="flex items-center justify-between mb-10 relative z-10">
                   <div className="flex items-center gap-4">
-                     <div className={`w-3 h-3 rounded-full animate-pulse \${scanning === 'Verified' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                     <div className={`w-3 h-3 rounded-full animate-pulse ${scanning === 'Verified' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
                      <h4 className="text-lg font-black text-slate-950 uppercase italic tracking-tighter">Bio_Scan</h4>
                   </div>
                   <Cpu className="h-5 w-5 text-slate-400 group-hover:rotate-180 transition-transform duration-1000" />
@@ -379,7 +379,7 @@ export default function PostFood() {
                
                <div 
                  onClick={simulateScan}
-                 className={`aspect-square rounded-[3.5rem] border-2 border-dashed transition-all duration-1000 flex flex-col items-center justify-center text-center p-12 cursor-pointer relative overflow-hidden \${
+                 className={`aspect-square rounded-[3.5rem] border-2 border-dashed transition-all duration-1000 flex flex-col items-center justify-center text-center p-12 cursor-pointer relative overflow-hidden ${
                    scanning === 'Verified' ? 'bg-emerald-50 border-emerald-200 shadow-inner' : 'bg-slate-50 border-slate-200 hover:border-emerald-500/30'
                  }`}
                >
@@ -391,7 +391,7 @@ export default function PostFood() {
                     />
                  )}
 
-                 <div className={`w-28 h-28 rounded-[2rem] flex items-center justify-center transition-all duration-1000 relative z-10 mb-8 \${
+                 <div className={`w-28 h-28 rounded-[2rem] flex items-center justify-center transition-all duration-1000 relative z-10 mb-8 ${
                    scanning === 'Verified' ? 'bg-emerald-600 text-white shadow-xl rotate-12' : 'bg-white border border-slate-100 text-slate-300'
                  }`}>
                     {scanning === 'Verified' ? <CheckCircle2 className="h-12 w-12" /> : <Camera className="h-12 w-12" />}
@@ -402,7 +402,7 @@ export default function PostFood() {
                  </p>
                  <div className="mt-4 flex gap-1 relative z-10">
                     {[1,2,3,4].map(i => (
-                      <div key={i} className={`w-4 h-1 rounded-full \${scanning === 'Verified' ? 'bg-emerald-500' : 'bg-slate-200'}`}></div>
+                      <div key={i} className={`w-4 h-1 rounded-full ${scanning === 'Verified' ? 'bg-emerald-500' : 'bg-slate-200'}`}></div>
                     ))}
                  </div>
                </div>

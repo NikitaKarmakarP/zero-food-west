@@ -160,7 +160,7 @@ export default function PickupTracking() {
                   <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16">
                     <div>
                       <div className="flex items-center gap-3 mb-6">
-                        <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest \${pickup.type === 'veg' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
+                        <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${pickup.type === 'veg' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
                           {pickup.type} Recovery
                         </span>
                         <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest bg-slate-50 dark:bg-white/5 px-3 py-1 rounded-lg">
@@ -212,7 +212,7 @@ export default function PickupTracking() {
                      ].map((stat, i) => (
                        <div key={i} className="bg-slate-50/50 dark:bg-black/20 p-5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-inner">
                           <div className="flex items-center gap-2 mb-2">
-                             <stat.icon className={`h-3.5 w-3.5 text-\${stat.color}-500`} />
+                             <stat.icon className={`h-3.5 w-3.5 text-${stat.color}-500`} />
                              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.label}</span>
                           </div>
                           <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">{stat.value}</div>

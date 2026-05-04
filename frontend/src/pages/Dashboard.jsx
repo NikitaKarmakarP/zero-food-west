@@ -109,7 +109,7 @@ export default function Dashboard() {
               className="p-10 rounded-[3.5rem] bg-white/80 dark:bg-white/[0.03] backdrop-blur-xl border border-white dark:border-white/10 shadow-2xl dark:shadow-none flex flex-col justify-between hover:scale-[1.02] transition-all duration-500 group"
             >
               <div className="flex justify-between items-start mb-12">
-                <div className={`w-16 h-16 rounded-2xl bg-\${stat.color}-500/10 text-\${stat.color}-600 dark:text-\${stat.color}-400 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
+                <div className={`w-16 h-16 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-400 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
                   <stat.icon className="h-8 w-8" />
                 </div>
                 <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">
@@ -144,7 +144,7 @@ export default function Dashboard() {
                   <button 
                     key={metric}
                     onClick={() => setActiveMetric(metric)}
-                    className={`px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all \${activeMetric === metric ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-xl scale-[1.05]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    className={`px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all ${activeMetric === metric ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-xl scale-[1.05]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                   >
                     {metric}
                   </button>
@@ -217,7 +217,7 @@ export default function Dashboard() {
             <div className="space-y-10">
               {recentActivity.map((activity, i) => (
                 <div key={activity.id} className="flex gap-6 relative group cursor-pointer">
-                  <div className={`mt-1 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 \${
+                  <div className={`mt-1 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 ${
                     activity.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-500 shadow-inner shadow-emerald-500/5' :
                     activity.status === 'In Transit' ? 'bg-blue-500/10 text-blue-500 shadow-inner shadow-blue-500/5' :
                     'bg-amber-500/10 text-amber-500 shadow-inner shadow-amber-500/5'
@@ -296,7 +296,7 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-10 py-8 text-right">
-                      <div className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest \${statusColors[row.color].bg} \${statusColors[row.color].text} shadow-sm`}>
+                      <div className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${statusColors[row.color].bg} ${statusColors[row.color].text} shadow-sm`}>
                         <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
                         {row.status}
                       </div>

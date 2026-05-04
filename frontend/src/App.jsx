@@ -1946,7 +1946,7 @@ function App() {
           <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
             <div className="flex items-center gap-5 px-8 py-4 bg-[#020617] border border-white/10 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.6)]">
                <ShieldCheck className="h-5 w-5 text-emerald-500" />
-               <p className="text-slate-400 text-xs font-mono font-bold uppercase tracking-[0.2em]">&copy; 2026 ZEROWASTE_NETWORK <span className="text-emerald-500 mx-3 font-black">//</span> ALL_NODES_SECURED</p>
+               <p className="text-slate-400 text-xs font-mono font-bold uppercase tracking-[0.2em]">&copy; 2026 ZEROWASTE_NETWORK <span className="text-emerald-500 mx-3 font-black">//</span> ALL_NODES_SECURED <span className="text-emerald-500 mx-3 font-black">//</span> MADE BY NIKITA</p>
             </div>
             
             <div className="flex gap-4">

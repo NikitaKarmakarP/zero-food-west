@@ -151,7 +151,7 @@ export default function SettingsPage() {
                           <div className="flex items-center justify-between">
                              <span className="text-sm font-black uppercase italic text-emerald-400">Synchronized</span>
                              <div className="flex gap-1">
-                                {[1,2,3,4].map(i => <div key={i} className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: `\${i * 0.2}s` }}></div>)}
+                                {[1,2,3,4].map(i => <div key={i} className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}></div>)}
                              </div>
                           </div>
                        </div>
@@ -332,7 +332,7 @@ export default function SettingsPage() {
                                 <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-500 to-blue-500 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                                 <div className="w-32 h-32 rounded-[2.5rem] border-8 border-white dark:border-slate-800 bg-slate-900 overflow-hidden relative z-10 shadow-2xl">
                                    <img 
-                                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=\${user?.name}&backgroundColor=020617`} 
+                                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}&backgroundColor=020617`} 
                                      alt="Profile" 
                                      className="w-full h-full object-cover"
                                    />

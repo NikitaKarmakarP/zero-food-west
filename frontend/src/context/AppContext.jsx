@@ -106,7 +106,7 @@ export const AppProvider = ({ children }) => {
     // Mock login logic
     const role = email.includes('ngo') ? 'ngo' : 'donor';
     const mockUser = {
-      id: `user_\${Date.now()}`,
+      id: `user_${Date.now()}`,
       name: email.split('@')[0].toUpperCase(),
       email,
       role,
@@ -173,13 +173,13 @@ export const AppProvider = ({ children }) => {
     };
     setDonations([newDonation, ...donations]);
     if (user) setUser({ ...user, points: user.points + 50 });
-    addNotification('Donation Posted', `Your donation of \${donation.foodName} is now live!`, '/dashboard');
+    addNotification('Donation Posted', `Your donation of ${donation.foodName} is now live!`, '/dashboard');
   };
 
   const acceptDonation = (id) => {
     const donation = donations.find(d => d.id === id);
     setDonations(donations.map(d => d.id === id ? { ...d, status: 'accepted', acceptedBy: user.id } : d));
-    addNotification('Rescue Accepted', `You have accepted the rescue for \${donation.foodName}. Check tracking for details.`, '/track');
+    addNotification('Rescue Accepted', `You have accepted the rescue for ${donation.foodName}. Check tracking for details.`, '/track');
   };
 
   const rejectDonation = (id) => {
